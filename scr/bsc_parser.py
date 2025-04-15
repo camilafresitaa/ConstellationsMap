@@ -26,11 +26,20 @@ def parse_catalog_line(line):
     RA_J2000 = f"{RAh} {RAm} {RAs}"
     Dec_J2000 = f"{DEsign}{DEd}° {DEm}' {DEs}''"
 
+    # Convert RA to decimal degrees, 1 hour = 15 degrees
+    RA_deg = (float(RAh) + float(RAm)/60 + float(RAs)/3600) * 15
+
+    # Convert Dec to decimal degrees, sign based on the DEsign character
+    sign = 1 if DEsign != "-" else -1
+    Dec_deg = sign * (float(DEd) + float(DEm)/60 + float(DEs)/3600)
+
     return {
         "HR": HR,
         "Name": Name,
         "RA_J2000": RA_J2000,
+        "RA_deg": RA_deg,
         "Dec_J2000": Dec_J2000,
+        "Dec_deg": Dec_deg,
         "Vmag": Vmag
     }
 
