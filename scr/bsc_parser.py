@@ -23,16 +23,26 @@ def parse_catalog_line(line):
     DEs = line[88:90].strip()
     Vmag = line[102:107].strip()
 
+    # Check that all the necessary fields for RA and Dec are present
+    if not (RAh and RAm and RAs and DEd and DEm and DEs):
+        return None
+
     RA_J2000 = f"{RAh} {RAm} {RAs}"
     Dec_J2000 = f"{DEsign}{DEd}° {DEm}' {DEs}''"
 
-    # Convert RA to decimal degrees, 1 hour = 15 degrees
-    RA_deg = (float(RAh) + float(RAm)/60 + float(RAs)/3600) * 15
+    # Convert RA to decimal degrees (1 hour = 15 degrees)
+    try:
+        RA_deg = (float(RAh) + float(RAm)/60 + float(RAs)/3600) * 15
+    except ValueError as e:
+        raise ValueError ("Error converting RA to float.") from e
 
-    # Convert Dec to decimal degrees, sign based on the DEsign character
+    # Convert Dec to decimal degrees
     sign = 1 if DEsign != "-" else -1
-    Dec_deg = sign * (float(DEd) + float(DEm)/60 + float(DEs)/3600)
-
+    try:
+        Dec_deg = sign * (float(DEd) + float(DEm)/60 + float(DEs)/3600)
+    except ValueError as e:
+        raise ValueError("Error converting Dec to float.") from e
+    
     return {
         "HR": HR,
         "Name": Name,
@@ -63,7 +73,10 @@ def read_bsc_file(filepath):
                     continue
                 try:
                     star = parse_catalog_line(line)
-                    stars.append(star)
+                    if star is not None:
+                        stars.append(star)
+                    else:
+                        continue
                 except ValueError as e:
                     print(f"Error parsing line: {e}")
     except FileNotFoundError:
