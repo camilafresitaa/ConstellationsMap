@@ -64,7 +64,7 @@ def read_bsc_file(filepath):
 
 
 def main():
-    filepath = "ConstellationsMap/data/ybsc5"
+    filepath = "data/ybsc5"
     stars = read_bsc_file(filepath)
 
     # Display the first 5 records to verify

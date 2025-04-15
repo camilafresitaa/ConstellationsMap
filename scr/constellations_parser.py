@@ -26,7 +26,7 @@ def read_constellations(filepath):
     
 
 def main():
-    filepath = "ConstellationsMap/data/constellations.csv"
+    filepath = "data/constellations.csv"
     constellations_df = read_constellations(filepath)
 
     if constellations_df is not None:
