@@ -179,28 +179,61 @@ def shearing_matrix(shx, shy):
     ])
 
 
-def compose_transformations(angle, tx, ty, sx, sy, shx, shy, reflection_axis=None):
+def compose_transformations(transformations):
     """
+    Compose a series of 3x3 transformation matrices based on a user-specified order.
+
+    Each transformation is defined as a dictionary with a "type" key and its parameters.
+    The order of the transformations in the list corresponds to the order in which they are applied:
+    the first in the list is applied first, then the next, and so on.
+
+    Parameters:
+        transformations (list): List of dictionaries. Each dictionary specifies a transformation. Supported types and parameters:
+            - "rotate": {"angle": angle_in_degrees}
+            - "translate": {"tx": value, "ty": value}
+            - "scale": {"sx": value, "sy": value}
+            - "shear": {"shx": value, "shy": value}
+            - "reflect": {"axis": "x"|"y"|"both"}
+
+    Returns:
+        numpy.array: The composite 3x3 transformation matrix.
     
     """
 
-    # Get transformation matrices
-    scale = scaling_matrix(sx, sy)
-    rotate = rotation_matrix(angle)
-    shear = shearing_matrix(shx, shy)
-    translate = translation_matrix(tx, ty)
+    composite = np.eye(3)
+    for transformation in transformations:
+        t_type = transformation["type"]
+        if t_type == "rotate":
+            M = rotation_matrix(transformation["angle"])
+        elif t_type == "translate":
+            M = translation_matrix(transformation["tx"], transformation["ty"])
+        elif t_type == "scale":
+            M = scaling_matrix(transformation["sx"], transformation["sy"])
+        elif t_type == "shear":
+            M = shearing_matrix(transformation["shx"], transformation["shy"])
+        elif t_type == "reflect":
+            M = reflection_matrix(transformation["axis"])
+        else:
+            raise ValueError(f"Invalid transformation type: {t_type}")
+        
+        # Multiply the new matrix to the composite matrix.
+        # Using M @ composite ensures that the transformation M is applied after the transformations
+        # already in "composite", which corresponds to the user specified order.
+        composite = M @ composite
+    return composite
 
-    if reflection_axis:
-        reflection = reflection_matrix(reflection_axis)
-    else:
-        reflection = np.eye(3) # If reflection_axis is not provided, use the identity matrix.
 
-    
-    # Compose the transformations
-    # Multiply matrices in order: scale -> rotate -> reflection -> translate
-    composite_matrix = translate @ reflection @ shear @ rotate @ scale
+# Example usage
+if __name__ == "__main__":
+    # Define example transformation parameters.
+    transformations_list = [
+        {"type": "rotate", "angle": 45},
+        {"type": "translate", "tx": 10 , "ty": 5},
+        {"type": "scale", "sx": 1.2, "sy": 1.2}
+    ]
 
-    return composite_matrix
-
-
+    # Generate composite matrix.
+    composite_matrix = compose_transformations(transformations_list)
+    # Print matrix for verification.
+    print("Composite matrix:\n", composite_matrix)
 
