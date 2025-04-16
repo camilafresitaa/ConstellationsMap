@@ -177,3 +177,30 @@ def shearing_matrix(shx, shy):
         [shy, 1, 0],
         [0, 0, 1]
     ])
+
+
+def compose_transformations(angle, tx, ty, sx, sy, shx, shy, reflection_axis=None):
+    """
+    
+    """
+
+    # Get transformation matrices
+    scale = scaling_matrix(sx, sy)
+    rotate = rotation_matrix(angle)
+    shear = shearing_matrix(shx, shy)
+    translate = translation_matrix(tx, ty)
+
+    if reflection_axis:
+        reflection = reflection_matrix(reflection_axis)
+    else:
+        reflection = np.eye(3) # If reflection_axis is not provided, use the identity matrix.
+
+    
+    # Compose the transformations
+    # Multiply matrices in order: scale -> rotate -> reflection -> translate
+    composite_matrix = translate @ reflection @ shear @ rotate @ scale
+
+    return composite_matrix
+
+
+
