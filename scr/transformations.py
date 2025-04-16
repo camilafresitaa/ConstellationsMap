@@ -7,7 +7,7 @@ def rotation_matrix(angle_degrees):
     Returns a 3x3 rotation matrix that rotates points about the origin.
     
     Mathematical Explanation:
-    The standard 2D ration matrix for an angle θ (in radians) is:
+    The standard 2D rotation matrix for an angle θ (in radians) is:
         [ cos(θ)  -sin(θ)   0 ]
         [ sin(θ)   cos(θ)   0 ]
         [   0        0      1 ]
