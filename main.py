@@ -1,7 +1,7 @@
 import pygame
 from stars.stars import load_stars
 from constellations.constellations import load_constellations
-from renderer.draw import draw_stars, draw_constellations
+from renderer.draw import draw_stars, draw_constellations, draw_labels
 from scr.transformations import compose_transformations
 from input.events import handle_events, build_operations
 
@@ -14,6 +14,7 @@ SCALE = 50
 def main():
     # Initialize Pygame
     pygame.init()
+    font = pygame.font.SysFont(None, 20)
     info = pygame.display.Info()
     WIDTH = info.current_w
     HEIGHT = info.current_h
@@ -61,6 +62,7 @@ def main():
         # Render constellations and stars
         draw_constellations(screen, constellations, CENTER, SCALE)
         draw_stars(screen, stars, CENTER, SCALE)
+        draw_labels(screen, constellations, CENTER, SCALE, font)
         pygame.display.flip()
 
     pygame.quit()    

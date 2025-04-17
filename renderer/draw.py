@@ -75,3 +75,31 @@ def draw_constellations(surface, constellations, center, scale, color=(200, 200,
             y2 = cy - b.y * scale
             # Draw a line between the two points
             pygame.draw.line(surface, color, (int(x1), int(y1)), (int(x2), int(y2)), width)
+
+
+def draw_labels(surface, constellations, center, scale, font, color=(255,255,0)):
+    """
+    """
+    cx, cy = center
+    for constellation in constellations:
+        # Si la constelación no tiene estrellas, saltar
+        if not constellation.stars:
+            continue
+
+        # 1. Para cada estrella, dibujar su HR
+        for star in constellation.stars:
+            px = cx - star.x * scale
+            py = cy - star.y * scale
+            label_surf = font.render(str(star.hr), True, color)  # star.hr está en Star :contentReference[oaicite:2]{index=2}&#8203;:contentReference[oaicite:3]{index=3}
+            # Ajustar un poco la posición para que no solape la estrella
+            surface.blit(label_surf, (int(px) + 4, int(py) - 4))
+
+        # 2. Dibujar el nombre de la constelación en su centroide
+        avg_x = sum(star.x for star in constellation.stars) / len(constellation.stars)
+        avg_y = sum(star.y for star in constellation.stars) / len(constellation.stars)
+        px = cx - avg_x * scale
+        py = cy - avg_y * scale
+        name_surf = font.render(constellation.name, True, color)
+        # Centrar el texto sobre el punto medio
+        w, h = name_surf.get_size()
+        surface.blit(name_surf, (int(px - w/2), int(py - h/2)))
