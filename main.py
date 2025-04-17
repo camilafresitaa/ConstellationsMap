@@ -4,8 +4,9 @@ import numpy as np
 from stars.stars import load_stars
 from constellations.constellations import load_constellations
 from renderer.draw import draw_stars, draw_constellations
-from scr.transformations import compose_transformations, perspective_matrix
 from input.events import handle_events, build_operations
+from scr.transformations import (compose_transformations, perspective_matrix, translation_matrix, rotation_x_matrix, rotation_y_matrix, rotation_z_matrix,
+scaling_matrix, reflection_matrix, shearing_matrix)
 
 
 # Configuration & Initialization
@@ -25,7 +26,7 @@ default_state = {
     'pitch': 0.0,   # rotation around X
     'yaw': 0.0,     # rotation around Y
     'roll': 0.0,    # rotation around Z
-    'fov': 60.0,
+    'fov': 30.0,
     'near': 0.1,
     'far': 1000.0,
     'move_speed': 10.0,  # Units per second
@@ -59,27 +60,82 @@ def main():
         running = handle_events(state, dt)
 
         # 2) Build model-view (camera) transformations
-        operations = build_operations(state)
-        M_modelview = compose_transformations(operations)
+        SCALE = 3.0
+        operations = []
+        operations.append({'type':'scale', 'sx':SCALE, 'sy':SCALE, 'sz':SCALE})
 
-        # 3) Perspective projection
-        P = perspective_matrix(state['fov'], ASPECT, state['near'], state['far'])
-        M_final = P @ M_modelview
+        # 2) Construir matrices de transformaciones
 
-        # Apply transform and project to screen coords
+        # 2a) Skybox de estrellas: SOLO rotaciones (ignora traslación)
+        ops_sky = [
+            {'type': 'rotate_y', 'angle': -state['yaw']},
+            {'type': 'rotate_x', 'angle': -state['pitch']},
+            {'type': 'rotate_z', 'angle': -state['roll']},
+        ]
+        M_sky = compose_transformations(ops_sky)
+
+        # 2b) Escena completa: escalado, espejado, cizallamiento + inversa de cámara
+        SCALE = 2.0       # ajusta para separar más o menos tus objetos
+        SHEAR_XY = 0.3    # cizalla X en función de Y
+        ops_scene = [
+            # Escalado global
+            {'type': 'scale', 'sx': SCALE, 'sy': SCALE, 'sz': SCALE},
+            # Espejado en X (puedes usar 'y' o 'z')
+            {'type': 'reflect', 'axis': 'x'},
+            # Cizallamiento: x += shxy * y
+            {'type': 'shear', 'shxy': SHEAR_XY, 'shxz': 0,
+                             'shyx': 0,      'shyz': 0,
+                             'shzx': 0,      'shzy': 0},
+            # Invertir cámara: traslación inversa
+            {'type': 'translate',
+             'tx': -state['cam_x'], 'ty': -state['cam_y'], 'tz': -state['cam_z']},
+            # Invertir rotaciones
+            {'type': 'rotate_z', 'angle': -state['roll']},
+            {'type': 'rotate_x', 'angle': -state['pitch']},
+            {'type': 'rotate_y', 'angle': -state['yaw']},
+        ]
+        M_scene = compose_transformations(ops_scene)
+
+
+        # 3) Perspective projection + culling + depth info
+        P  = P     = perspective_matrix(state['fov'], ASPECT, state['near'], state['far'])
+        # Primero proyectamos en espacio cámara (model-view) y guardamos la profundidad
+
+
         for star in stars:
-            star.apply_transformation(M_final)
-            x_h, y_h, z_h, w_h = star.homogeneous
+            # 3a) Transformar con M_sky (solo rotaciones)
+            view_hom = M_sky @ star.base_homogeneous
+            # Frustum culling: solo si está entre near y far y delante (vz > 0)
+            # if vz < state['near'] or vz > state['far']:
+            #     star.visible = False
+            #     continue
+
+
+            # star.visible = True
+            # star.view_z = vz
+
+
+
+            # Ahora aplicamos P para obtener clip-space
+            clip_hom = P @ view_hom
+            x_h, y_h, _, w_h = clip_hom
             x_ndc = x_h / w_h
             y_ndc = y_h / w_h
-            # NDC (-1..1) to pixel coords
+            # NDC (-1..1) → coordenadas de pantalla
             star.x = ( x_ndc + 1) * 0.5 * WIDTH
             star.y = (1 - y_ndc) * 0.5 * HEIGHT
 
         # Render
         screen.fill((0,0,0))
+
+        # Draw constellations
         draw_constellations(screen, constellations)
-        draw_stars(screen, stars)
+
+        # Draw stars
+        visible = [s for s in stars if getattr(s, 'visible', False)]
+        visible.sort(key=lambda s: s.view_z, reverse=True)
+        draw_stars(screen, visible,
+                   depth_near=state['near'], depth_far=state['far'])
         pygame.display.flip()
 
     pygame.quit()    

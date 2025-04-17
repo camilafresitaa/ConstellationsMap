@@ -2,7 +2,7 @@ import pygame
 import math
 
 
-def draw_stars(surface, stars, color=(255, 255, 255), min_size=0.1, max_size=4, min_alpha=30, max_alpha=255):
+def draw_stars(surface, stars, color=(255, 255, 255), min_size=0.1, max_size=4, min_alpha=30, max_alpha=255, depth_near=0.1, depth_far=1000.0):
     """
     Draw points for each star.
 
@@ -24,12 +24,16 @@ def draw_stars(surface, stars, color=(255, 255, 255), min_size=0.1, max_size=4, 
     dv = max_v - min_v if max_v > min_v else 1
 
     for star in stars:
-        # Normalize brightness
-        norm = (max_v - star.vmag) / dv
+        # Normalizamos Vmag como antes
+        norm_b = (max_v - star.vmag) / dv
 
-        # Compute dynamic size and alpha
-        size = int(min_size + norm * (max_size - min_size))
-        alpha = int(min_alpha + norm * (max_alpha - min_alpha))
+        # Normalizamos la profundidad (star.view_z en [near,far] → [0,1])
+        dz = max(0.0, min(1.0, (star.view_z - depth_near) / (depth_far - depth_near)))
+
+        # Tamaño y alpha combinando brillo + profundidad
+        # Aquí: estrellas lejanas (dz→1) más pequeñas, cercanas más grandes
+        size = max(1, int((min_size + norm_b*(max_size-min_size)) * (1 - 0.7*dz)))
+        alpha = int((min_alpha + norm_b * (max_alpha - min_alpha)) * (1 - 0.5*dz))
 
         # Create temporary surface for per-star alpha
         # surf = pygame.Surface((size*2, size*2), pygame.SRCALPHA)
