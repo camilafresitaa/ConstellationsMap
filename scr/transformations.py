@@ -257,6 +257,13 @@ def perspective_matrix(fov_deg: float, aspect: float, near: float, far: float):
     Returns:
         numpy.ndarray: A 4x4 perspective projection matrix.
     """
+    f = 1.0 / math.tan(math.radians(fov_deg) / 2.0)
+    return np.array([
+        [f/aspect, 0,                   0,                     0],
+        [0,        f,                   0,                     0],
+        [0,        0,    (far+near)/(near-far), (2*far*near)/(near-far)],
+        [0,        0,                  -1,                     0],
+    ])
 
 
 def compose_transformations(transformations):

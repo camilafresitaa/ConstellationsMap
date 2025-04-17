@@ -81,14 +81,16 @@ def build_operations(state):
     """
     Build the list of transformation operations for compose_transformations().
     """
-    operations = [
-        {'type': 'rotate',    'angle': state['angle']},
-        {'type': 'translate', 'tx': state['tx'], 'ty': state['ty']},
-        {'type': 'scale',     'sx': state['scale'], 'sy': state['scale']},
-    ]
-    if state['reflect']:
-        operations.append({'type': 'reflect', 'axis': 'both'})
-    if state['shx'] or state['shy']:
-        operations.append({'type': 'shear', 'shx': state['shx'], 'shy': state['shy']})
+    operations = []
+    operations.append({'type': 'rotate_y', 'angle': -state['yaw']})
+    operations.append({'type': 'rotate_x', 'angle': -state['pitch']})
+    operations.append({'type': 'rotate_z', 'angle': -state.get('roll', 0.0)})
+
+    operations.append({
+        'type': 'translate',
+        'tx': -state['cam_x'],
+        'ty': -state['cam_y'],
+        'tz': -state['cam_z'],
+    })
     return operations
 
