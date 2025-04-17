@@ -59,9 +59,9 @@ def handle_events(state, dt):
     if keys[pygame.K_d]:
         state['tx'] += TRANSLATION_SPEED * dt
     if keys[pygame.K_w]:
-        state['ty'] += TRANSLATION_SPEED * dt
-    if keys[pygame.K_s]:
         state['ty'] -= TRANSLATION_SPEED * dt
+    if keys[pygame.K_s]:
+        state['ty'] += TRANSLATION_SPEED * dt
 
     # Shear (factor per second)
     SHEAR_SPEED = 1.0
