@@ -17,7 +17,7 @@ def draw_stars(surface, stars, center, scale, color=(255, 255, 255), size=2):
     cx, cy = center
     for star in stars:
         # Convert star.x, star.y (map coords) to screen pixels
-        px = cx + star.x * scale
+        px = cx - star.x * scale
         py = cy - star.y * scale
         # Draw a small circle at (px, py)
         pygame.draw.circle(surface, color, (int(px), int(py)), size)
@@ -45,9 +45,9 @@ def draw_constellations(surface, constellations, center, scale, color=(200, 200,
         # Connect each star to the next in sequence
         for a, b in zip(stars, stars[1:]):
             # Convert endpoints to screen pixels
-            x1 = cx + a.x * scale
+            x1 = cx - a.x * scale
             y1 = cy - a.y * scale
-            x2 = cx + b.x * scale
+            x2 = cx - b.x * scale
             y2 = cy - b.y * scale
             # Draw a line between the two points
             pygame.draw.line(surface, color, (int(x1), int(y1)), (int(x2), int(y2)), width)
