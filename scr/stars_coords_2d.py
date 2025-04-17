@@ -68,7 +68,7 @@ def stars_coords():
         star["homogeneous"] = add_homogeneous_coord(x, y)
         stars_2d.append(star)
 
-    return stars
+    return stars_2d
 
     # Display the first 5 stars with their 2D and homogeneous coordinates for verification
     print("First 5 stars with 2D coordinates (x, y) and homogeneous coordinates:")
