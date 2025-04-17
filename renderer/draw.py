@@ -10,7 +10,7 @@ def draw_stars(surface, stars, center, scale, color=(255, 255, 255), size=2):
         stars (list): List of Star instances with .x and .y attributes.
         center (tuple): (center_x, center_y) pixel coordinates of map origin.
         scale (float): Scaling factor from star coordinates to pixels.
-        color (tuple): RGB clor of the stars.
+        color (tuple): RGB color of the stars.
         size (int): Radius in pixels of each drawn star.
     """
     # Unpack center pixel coordinates (origin of star map)
