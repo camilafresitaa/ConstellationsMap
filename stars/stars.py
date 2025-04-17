@@ -11,7 +11,8 @@ class Star():
         self.vmag = vmag
         self.x = x
         self.y = y
-        self.homogeneous = homogeneous
+        self.homogeneous = homogeneous.copy()
+        self.base_homogeneous = homogeneous.copy()
 
     def __repr__(self):
         return(f"Star {self.hr}: ({self.x}, {self.y})")
@@ -24,7 +25,7 @@ class Star():
         Parameters:
             matrix (np.ndarray): Composite 3x3 transformation.
         """
-        new_homogeneous = matrix @ self.homogeneous
+        new_homogeneous = matrix @ self.base_homogeneous
         self.homogeneous = new_homogeneous
         self.x, self.y = float(new_homogeneous[0]), float(new_homogeneous[1])
     
