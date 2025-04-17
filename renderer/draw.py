@@ -1,7 +1,7 @@
 import pygame
 
 
-def draw_stars(surface, stars, center, scale, color=(255, 255, 255), size=2):
+def draw_stars(surface, stars, center, scale, color=(255, 255, 255), min_size=0.1, max_size=4, min_alpha=30, max_alpha=255):
     """
     Draw each star as a filled circle on the given surface.
 
@@ -11,19 +11,43 @@ def draw_stars(surface, stars, center, scale, color=(255, 255, 255), size=2):
         center (tuple): (center_x, center_y) pixel coordinates of map origin.
         scale (float): Scaling factor from star coordinates to pixels.
         color (tuple): RGB color of the stars.
-        size (int): Radius in pixels of each drawn star.
+        min_size (int): Minimum radius in pixels for the faintest star.
+        max_size (int): Maximum radius in pixels for the brightest star.
+        min_alpha (int): Minimum alpha (0-255) for the faintest star.
+        max_alpha (int): Maximum alpha (0-255) for the brightest star.
     """
     # Unpack center pixel coordinates (origin of star map)
     cx, cy = center
+
+    # Determine vmag range
+    vmag_values = [star.vmag for star in stars]
+    if not vmag_values:
+        return
+    min_v, max_v = min(vmag_values), max(vmag_values)
+    dv = max_v - min_v if max_v > min_v else 1
+
     for star in stars:
-        # Convert star.x, star.y (map coords) to screen pixels
+        # Normalize brightness
+        norm = (max_v - star.vmag) / dv
+
+        # Compute dynamic size and alpha
+        size = int(min_size + norm * (max_size - min_size))
+        alpha = int(min_alpha + norm * (max_alpha - min_alpha))
+
+        # Convert star coords to screen pixels
         px = cx - star.x * scale
         py = cy - star.y * scale
-        # Draw a small circle at (px, py)
-        pygame.draw.circle(surface, color, (int(px), int(py)), size)
+
+        # Create temporary surface for per-star alpha
+        surf = pygame.Surface((size*2, size*2), pygame.SRCALPHA)
+        draw_color = (color[0], color[1], color[2], alpha)
+        pygame.draw.circle(surf, draw_color, (size, size), size)
+
+        # Blit at center offset by size
+        surface.blit(surf, (int(px - size), int(py - size)))
 
 
-def draw_constellations(surface, constellations, center, scale, color=(200, 200, 200), width=1):
+def draw_constellations(surface, constellations, center, scale, color=(200, 200, 200), width=1, max_segment_frac=0.5):
     """
     Draw lines connecting stars in each constellation.
 
