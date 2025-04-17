@@ -65,7 +65,7 @@ def stars_coords():
         star["x"] = x
         star["y"] = y
         # Add homogeneous coordinate representation [x, y, 1] 
-        star["homogeneous"] = add_homogeneous_coord(x, y)
+        star["Homogeneous"] = add_homogeneous_coord(x, y)
         stars_2d.append(star)
 
     return stars_2d
@@ -73,7 +73,7 @@ def stars_coords():
     # Display the first 5 stars with their 2D and homogeneous coordinates for verification
     print("First 5 stars with 2D coordinates (x, y) and homogeneous coordinates:")
     for star in stars_2d[:5]:
-        print(f"{star["HR"]}: x = {star["x"]}, y = {star["y"]}, homogeneous = {star['homogeneous']}")
+        print(f"{star["HR"]}: x = {star["x"]}, y = {star["y"]}, Homogeneous = {star['homogeneous']}")
 
 
 if __name__ == "__main__":
