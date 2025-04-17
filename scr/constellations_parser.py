@@ -1,38 +1,50 @@
-import pandas as pd
+import csv
 
 def read_constellations(filepath):
     """
-    Reads the constellations dataset from a CSV file.
+    Read the constellations dataset from a CSV file and return a list of dicts.
+
+    Expected CSV format per row:
+        name, count, HR1, HR2, ..., HRn
 
     Parameters:
         filepath (str): Path to the constellations CSV file.
 
     Returns:
-        DataFrame: A pandas DataFrame containing the constellations data.
+        List: A list of dictionaries containing the constellations data.
+        Each dictionary has:
+        - "Name": constellation name (str)
+        - "HR_sequence": list of HR numbers (list of int)
     """
 
+    constellations = []
+
     try:
-        df = pd.read_csv(filepath)
-        return df
+        with open(filepath, newline="") as f:
+            reader = csv.reader(f)
+            for row in reader:
+                if not row or len(row) < 2:
+                    continue
+                name = row[0]
+                try:
+                    count = int(row[1])
+                except ValueError:
+                    continue
+
+                hr_seq = []
+                for hr in row[2:2 + count]:
+                    if hr:
+                        try:
+                            hr_seq.append(int(hr))
+                        except ValueError:
+                            continue
+    
+                constellations.append({"Name": name, "HR_sequence": hr_seq})
+    
     except FileNotFoundError:
         print(f"File {filepath} not found.")
-        return None
-    except pd.errors.EmptyDataError:
-        print("File is empty.")
-        return None
-    except pd.errors.ParserError as e:
-        print(f"Error parsing the file: {e}")
-        return None
+
+    return constellations
     
 
-def main():
-    filepath = "data/constellations.csv"
-    constellations_df = read_constellations(filepath)
-
-    if constellations_df is not None:
-        # Display the first rows to verify that it has been read correctly
-        print(constellations_df.head())
-
-
-if __name__ == "__main__":
-    main()
+print(read_constellations("data/constellations.csv"))
