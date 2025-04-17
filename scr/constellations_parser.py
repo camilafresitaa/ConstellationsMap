@@ -1,6 +1,6 @@
 import csv
 
-def read_constellations(filepath):
+def read_constellations():
     """
     Read the constellations dataset from a CSV file and return a list of dicts.
 
@@ -18,6 +18,7 @@ def read_constellations(filepath):
     """
 
     constellations = []
+    filepath = "data/constellations.csv"
 
     try:
         with open(filepath, newline="") as f:
@@ -47,4 +48,4 @@ def read_constellations(filepath):
     return constellations
     
 
-print(read_constellations("data/constellations.csv"))
+# print(read_constellations("data/constellations.csv"))

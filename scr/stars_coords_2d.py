@@ -56,7 +56,6 @@ def stars_coords():
     # Calculate the center of the map (RA0, Dec0) as the average values of the star catalog
     RA0 = sum(ra_list) / len(ra_list)
     Dec0 = sum(dec_list) / len(dec_list)
-    print(f"Central reference coordinates ({RA0}, {Dec0})")
 
     # Process each star: convert spherical coordinates to 2D and then compute homogeneous coordinates
     stars_2d = []
