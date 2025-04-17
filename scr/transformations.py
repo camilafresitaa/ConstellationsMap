@@ -2,215 +2,296 @@ import numpy as np
 import math
 
 
-def rotation_matrix(angle_degrees):
+def rotation_x_matrix(angle_degrees: float):
     """
-    Returns a 3x3 rotation matrix that rotates points about the origin.
+    Returns a 4x4 matrix rotating points around the x-axis by angle (degrees).
     
     Mathematical Explanation:
-    The standard 2D rotation matrix for an angle θ (in radians) is:
-        [ cos(θ)  -sin(θ)   0 ]
-        [ sin(θ)   cos(θ)   0 ]
-        [   0        0      1 ]
-    This matrix rotates a point (x, y) by the angle θ while preserving homogeneous coordinates.
+    The x-axis rotation matrix for angle θ (radians) is:
+        [ 1    0     0    0 ]
+        [ 0  cosθ  -sinθ  0 ]
+        [ 0  sinθ   cosθ  0 ]
+        [ 0    0     0    1 ]
+    Rotates the y and z coordinates around the x-axis.
 
     Visual Effect:
-    Applying this matrix rotates the entire screen (or "sky") by the specified angle,
-    effectively "spinning" the view of the star map.
+    Applying this matrix tilts the scene up/down as if looking up or down over the X-axis.
 
     Parameters:
-        angle_degrees (float): The rotation angle in degrees.
+        angle_degrees (float): The rotation angle around the x-axis in degrees.
 
     Returns:
-        numpy.array: A 3x3 rotation matrix.
+        numpy.ndarray: A 4x4 rotation matrix about the x-axis.
     """
-
-    # Get cos and sin of angle in radians
-    angle_radians = math.radians(angle_degrees)
-    cos_theta = math.cos(angle_radians)
-    sin_theta = math.sin(angle_radians)
-
+    θ = math.radians(angle_degrees)
+    cos = math.cos(θ)
+    sin = math.sin(θ)
     return np.array([
-        [cos_theta, -sin_theta, 0],
-        [sin_theta, cos_theta, 0],
-        [0, 0, 1]
+        [1, 0,  0, 0],
+        [0, cos, -sin, 0],
+        [0, sin,  cos, 0],
+        [0, 0,  0, 1],
     ])
 
 
-def translation_matrix(tx, ty):
+def rotation_y_matrix(angle_degrees: float):
     """
-    Returns a 3x3 translation matrix that shifts points by (tx, ty).
+    Returns a 4x4 matrix rotating points around the y-axis by angle (degrees).
     
     Mathematical Explanation:
-    The translation matrix in homogeneous coordinates is:
-        [ 1   0   tx ]
-        [ 0   1   ty ]
-        [ 0   0   1  ]
-    It adds tx to the x-coordinate and ty to the y-coordinate of a point.
+    The y-axis rotation matrix for angle θ is:
+        [ cosθ   0  sinθ  0 ]
+        [   0    1    0   0 ]
+        [ -sinθ  0  cosθ  0 ]
+        [   0    0    0   1 ]
+    Rotates the x and z coordinates around the y-axis.
+
+    Visual Effect:
+    Applying this matrix pivots the scene left/right as if turning your head side to side.
+
+    Parameters:
+        angle_degrees (float): The rotation angle around the y-axis in degrees.
+
+    Returns:
+        numpy.ndarray: A 4x4 rotation matrix about the y-axis.
+    """
+    θ = math.radians(angle_degrees)
+    cos = math.cos(θ)
+    sin = math.sin(θ)
+    return np.array([
+        [ cos, 0, sin, 0],
+        [ 0, 1, 0, 0],
+        [-sin, 0, cos, 0],
+        [ 0, 0, 0, 1],
+    ])
+
+
+def rotation_z_matrix(angle_degrees: float):
+    """
+    Returns a 4x4 matrix rotating points around the z-axis by angle (degrees).
+    
+    Mathematical Explanation:
+    The z-axis rotation matrix for angle θ is:
+        [ cosθ  -sinθ   0   0 ]
+        [ sinθ   cosθ   0   0 ]
+        [  0      0     1   0 ]
+        [  0      0     0   1 ]
+    Rotates the x and y coordinates in the xy-plane.
+
+    Visual Effect:
+    Applying this matrix spins the scene clockwise or counterclockwise around the view axis.
+
+    Parameters:
+        angle_degrees (float): The rotation angle around the z-axis in degrees.
+
+    Returns:
+        numpy.ndarray: A 4x4 rotation matrix about the z-axis.
+    """
+    θ = math.radians(angle_degrees)
+    c, s = math.cos(θ), math.sin(θ)
+    return np.array([
+        [c, -s, 0, 0],
+        [s,  c, 0, 0],
+        [0,  0, 1, 0],
+        [0,  0, 0, 1],
+    ])
+
+
+def translation_matrix(tx: float, ty: float, tz: float):
+    """
+    Returns a 4x4 translation matrix that moves points by (tx, ty, tz).
+    
+    Mathematical Explanation:
+    The homogeneous translation matrix is:
+        [ 1   0   0  tx ]
+        [ 0   1   0  ty ]
+        [ 0   0   1  tz ]
+        [ 0   0   0   1 ]
+    It adds tx to the x-coordinate, ty to the y-coordinate of a point and tz to the z-coordinate.
     
     Visual Effect:
-    This matrix moves (or "slides") the entire scene, allowing you to reposition 
-    the star map within your view without altering its orientation or shape.
+    This matrix moves (or "slides") the entire scene in 3D space without rotation or scaling.
     
     Parameters:
         tx (float): Translation along the x-axis.
         ty (float): Translation along the y-axis.
+        tz (float): Translation along the z-axis.
     
     Returns:
-        numpy.array: A 3x3 translation matrix.
+        numpy.ndarray: A 4x4 translation matrix.
     """
-
     return np.array([
-        [1, 0, tx],
-        [0, 1, ty],
-        [0, 0, 1]
+        [1, 0, 0, tx],
+        [0, 1, 0, ty],
+        [0, 0, 1, tz],
+        [0, 0, 0,  1],
     ])
 
 
-def scaling_matrix(sx, sy):
+def scaling_matrix(sx: float, sy: float, sz: float):
     """
-    Returns a 3x3 scaling matrix that scales points along the x and y axes.
+    Returns a 4x4 scaling matrix that scales points by (sx, sy, sz).
     
     Mathematical Explanation:
-    The scaling matrix in homogeneous coordinates is:
-        [ sx   0    0 ]
-        [  0   sy   0 ]
-        [  0   0    1 ]
-    Each point (x, y) is transformed to (sx*x, sy*y).
+    The homogeneous scaling matrix is:
+        [ sx   0    0    0 ]
+        [  0   sy   0    0 ]
+        [  0    0   sz   0 ]
+        [  0    0    0   1 ]
+    Each point (x, y, z, 1) is transformed to (sx*x, sy*y, sz*z, 1).
     
     Visual Effect:
-    Scaling enlarges or shrinks the scene. A factor greater than 1 zooms in (enlarging),
-    while a factor between 0 and 1 zooms out (shrinking) the star map.
+    Enlarges or shrinks the scene along each axis.
+    Values >1 zoom in, values <1 zoom out.
     
     Parameters:
         sx (float): Scaling factor for the x-axis.
         sy (float): Scaling factor for the y-axis.
+        sz (float): Scaling factor for the z-axis.
     
     Returns:
-        numpy.array: A 3x3 scaling matrix.    
+        numpy.ndarray: A 4x4 scaling matrix.    
     """
-
     return np.array([
-        [sx, 0 ,0],
-        [0, sy, 0],
-        [0, 0, 1]
+        [sx,  0,  0, 0],
+        [ 0, sy,  0, 0],
+        [ 0,  0, sz, 0],
+        [ 0,  0,  0, 1],
     ])
 
 
-def reflection_matrix(axis="x"):
+def reflection_matrix(axis: str="xyz"):
     """
-    Returns a 3x3 reflection matrix that mirrors points across the specified axis.
+    Returns a 4x4 reflection matrix that mirrors points across the specified axis.
     
     Mathematical Explanation:
-    Reflection matrices in homogeneous coordinates are defined as:
-    - For reflection across the x-axis:
-          [ 1   0   0 ]
-          [ 0  -1   0 ]
-          [ 0   0   1 ]
-    - For reflection across the y-axis:
-          [ -1  0   0 ]
-          [ 0   1   0 ]
-          [ 0   0   1 ]
-    - For reflection across both axes:
-          [ -1  0   0 ]
-          [ 0  -1   0 ]
-          [ 0   0   1 ]
+    Reflection across coordinate planes is given by -1 on the axis to mirror:
+    - "x": reflect across YZ-plane [ -1, 1, 1 ]
+    - "y": reflect across XZ-plane [ 1, -1, 1 ]
+    - "z": reflect across XY-plane [ 1, 1, -1 ]
     
     Visual Effect:
-    This matrix produces a mirror image of the scene along the specified axis or axes,
-    effectively "flipping" the star map horizontally, vertically, or both.
+    This matrix flips the scene along the chosen axis or axes, like a mirror.
+
     
     Parameters:
-        axis (str): Specifies the axis of reflection; accepted values are "x", "y", or "both".
+        axis (str): Specifies the axis of reflection; accepted values are "x", "y" or "z".
     
     Returns:
-        numpy.array: A 3x3 reflection matrix.
+        numpy.ndarray: A 4x4 reflection matrix.
     """
-
-    if axis == "x":
-        return np.array([
-            [1, 0, 0],
-            [0, -1, 0],
-            [0, 0, 1]
-        ])
-    elif axis == "y":
-        return np.array([
-            [-1, 0, 0],
-            [0, 1, 0],
-            [0, 0, 1]
-        ])
-    elif axis == "both":
-        return np.array([
-            [-1, 0, 0],
-            [0, -1, 0],
-            [0, 0, 1]
-        ])
-    else:
-        raise ValueError("Invalid axis. Use 'x', 'y', or 'both'.")
-    
-
-def shearing_matrix(shx, shy):
-    """
-    Returns a 3x3 shearing matrix that distorts the scene by shifting coordinates.
-    
-    Mathematical Explanation:
-    The shearing (or skew) matrix in homogeneous coordinates is given by:
-        [ 1   shx   0 ]
-        [ shy  1    0 ]
-        [ 0    0    1 ]
-    Here, shx is the shear factor for x (which shifts x by an amount proportional to y),
-    and shy is the shear factor for y (which shifts y by an amount proportional to x).
-    
-    Visual Effect:
-    This matrix distorts the scene by "slanting" or "tilting" the positions of points in the star map,
-    creating a skewed or sheared effect.
-    
-    Parameters:
-        shx (float): Shear factor along the x-axis.
-        shy (float): Shear factor along the y-axis.
-    
-    Returns:
-        numpy.array: A 3x3 shearing matrix.
-    """
-    
+    axes = {
+        "x": np.array([-1,  1,  1]),
+        "y": np.array([ 1, -1,  1]),
+        "z": np.array([ 1,  1, -1]),
+    }
+    if axis not in axes:
+        raise ValueError("Invalid axis. Use 'x', 'y' or 'z'.")
+    rx, ry, rz = axes[axis]
     return np.array([
-        [1, shx, 0],
-        [shy, 1, 0],
-        [0, 0, 1]
+        [rx,  0,  0, 0],
+        [ 0, ry,  0, 0],
+        [ 0,  0, rz, 0],
+        [ 0,  0,  0, 1],
     ])
+    
+
+def shearing_matrix(shxy: float=0, shxz: float=0,
+                    shyx: float=0, shyz: float=0,
+                    shzx: float=0, shzy: float=0):
+    """
+    Returns a 4x4 shearing matrix that skews the scene in 3D.
+
+    Mathematical Explanation:
+    Shear factors define how much one axis shifts proportionally to another:
+        [ 1   shxy shxz  0 ]
+        [ shyx 1   shyz  0 ]
+        [ shzx shzy 1    0 ]
+        [  0    0    0   1 ]
+    For example, shxy shifts x by an amount proportional to y.
+    
+    Visual Effect:
+    This matrix tilts and skews the scene, producing a slanted distortion along chosen planes.
+    
+    Parameters:
+        shxy (float): Shear factor of x in proportion to y.
+        shxz (float): Shear factor of x in proportion to z.
+        shyx (float): Shear factor of y in proportion to x.
+        shyz (float): Shear factor of y in proportion to z.
+        shzx (float): Shear factor of z in proportion to x.
+        shzy (float): Shear factor of z in proportion to y.
+
+    Returns:
+        numpy.ndarray: A 4x4 shearing matrix.
+    """
+    return np.array([
+        [1,    shxy, shxz, 0],
+        [shyx, 1,    shyz, 0],
+        [shzx, shzy, 1,    0],
+        [0,    0,    0,    1],
+    ])
+
+
+def perspective_matrix(fov_deg: float, aspect: float, near: float, far: float):
+    """
+    Returns a 4x4 perspective projection matrix.
+
+    Mathematical Explanation:
+    Given vertical field of view θ, aspect ratio a, near plane n, far plane f,
+    the perspective matrix is:
+        [ (1/tan(θ/2))/a     0               0               0     ]
+        [      0          1/tan(θ/2)         0               0     ]
+        [      0             0         (f+n)/(n-f)   (2*f*n)/(n-f) ]
+        [      0             0              -1               0     ]
+    This transforms 3D points into clip space for perspective division.
+
+    Visual Effect:
+    Creates depth and foreshortening: distant objects appear smaller and parallel lines converge.
+
+    Parameters:
+        fov_deg (float): Vertical field of view in degrees.
+        aspect (float): Width divided by height of the viewport.
+        near (float): Distance to near clipping plane.
+        far (float): Distance to far clipping plane.
+
+    Returns:
+        numpy.ndarray: A 4x4 perspective projection matrix.
+    """
 
 
 def compose_transformations(transformations):
     """
-    Compose a series of 3x3 transformation matrices based on a user-specified order.
+    Compose a list of 4x4 transformation matrices in the given order.
 
-    Each transformation is defined as a dictionary with a "type" key and its parameters.
-    The order of the transformations in the list corresponds to the order in which they are applied:
-    the first in the list is applied first, then the next, and so on.
-
-    Parameters:
-        transformations (list): List of dictionaries. Each dictionary specifies a transformation. Supported types and parameters:
-            - "rotate": {"angle": angle_in_degrees}
-            - "translate": {"tx": value, "ty": value}
-            - "scale": {"sx": value, "sy": value}
-            - "shear": {"shx": value, "shy": value}
-            - "reflect": {"axis": "x"|"y"|"both"}
+    Each dict must have a 'type' key and corresponding parameters:
+      - 'translate': {'tx', 'ty', 'tz'}
+      - 'rotate_x':  {'angle'}
+      - 'rotate_y':  {'angle'}
+      - 'rotate_z':  {'angle'}
+      - 'scale':     {'sx', 'sy', 'sz'}
+      - 'reflect':   {'axis'}
+      - 'shear':     {'shxy','shxz','shyx','shyz','shzx','shzy'}
 
     Returns:
-        numpy.ndarray: The composite 3x3 transformation matrix.
+        numpy.ndarray: The composite 4x4 transformation matrix.
     
     """
-
-    composite = np.eye(3)
+    composite = np.eye(4)
     for transformation in transformations:
         t_type = transformation["type"]
-        if t_type == "rotate":
-            M = rotation_matrix(transformation["angle"])
+        if t_type == "rotate_x":
+            M = rotation_x_matrix(transformation["angle"])
+        elif t_type == "rotate_y":
+            M = rotation_y_matrix(transformation["angle"])
+        elif t_type == "rotate_z":
+            M = rotation_z_matrix(transformation["angle"])
         elif t_type == "translate":
-            M = translation_matrix(transformation["tx"], transformation["ty"])
+            M = translation_matrix(transformation["tx"], transformation["ty"], transformation["tz"])
         elif t_type == "scale":
-            M = scaling_matrix(transformation["sx"], transformation["sy"])
+            M = scaling_matrix(transformation["sx"], transformation["sy"], transformation["sz"])
         elif t_type == "shear":
-            M = shearing_matrix(transformation["shx"], transformation["shy"])
+            M = shearing_matrix(transformation["shxy"], transformation["shxz"], transformation["shyx"],
+                                transformation["shyz"], transformation["shzx"], transformation["shzy"])
         elif t_type == "reflect":
             M = reflection_matrix(transformation["axis"])
         else:
@@ -221,19 +302,3 @@ def compose_transformations(transformations):
         # already in "composite", which corresponds to the user specified order.
         composite = M @ composite
     return composite
-
-
-# Example usage
-if __name__ == "__main__":
-    # Define example transformation parameters.
-    transformations_list = [
-        {"type": "rotate", "angle": 45},
-        {"type": "translate", "tx": 10 , "ty": 5},
-        {"type": "scale", "sx": 1.2, "sy": 1.2}
-    ]
-
-    # Generate composite matrix.
-    composite_matrix = compose_transformations(transformations_list)
-    # Print matrix for verification.
-    print("Composite matrix:\n", composite_matrix)
-
