@@ -46,12 +46,12 @@ def stars_coords_3d():
     stars_3d = []
     for star in stars_raw:
         # Compute 4D homogeneous coordinate
-        vec4 = sph_to_cart(star["RA_deg"], star["Dec_deg"])
+        v = sph_to_cart(star["RA_deg"], star["Dec_deg"], star.get("dist", 1.0))
         # Unpack Cartesian components
-        x, y, z = vec4[:3]
+        x, y, z,_ = v
         star["x"] = x
         star["y"] = y
         star["z"] = z
-        star["homogeneous"] = vec4
+        star["homogeneous"] = v
         stars_3d.append(star)
     return stars_3d

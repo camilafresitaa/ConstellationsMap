@@ -1,16 +1,22 @@
 import sys
 import pygame
+import numpy as np
 from stars.stars import load_stars
 from constellations.constellations import load_constellations
-from renderer.draw import draw_stars, draw_constellations, draw_labels
+from renderer.draw import draw_stars, draw_constellations
 from scr.transformations import compose_transformations, perspective_matrix
 from input.events import handle_events, build_operations
 
 
-# Frames per second
+# Configuration & Initialization
 FPS = 60
-# Base scale (pixels per map unit)
-SCALE = 50
+pygame.init()
+info = pygame.display.Info()
+WIDTH, HEIGHT = info.current_w, info.current_h
+screen = pygame.display.set_mode((WIDTH, HEIGHT))
+clock = pygame.time.Clock()
+ASPECT = WIDTH / HEIGHT
+
 # Camera and projection state
 default_state = {
     'cam_x': 0.0,
@@ -22,27 +28,28 @@ default_state = {
     'fov': 60.0,
     'near': 0.1,
     'far': 1000.0,
+    'move_speed': 10.0,  # Units per second
+    'mouse_sens':  0.1,  # Degrees per pixel of mouse movement
 }
 state = default_state.copy()
 
+# Load stars & constellations
+stars = load_stars()
+star_lookup = {star.hr: star for star in stars}
+constellations = load_constellations(star_lookup)
+
+
+# == Nuevo cálculo de 'far' basado en paralaje real ==
+# Calculamos la distancia máxima de cualquier estrella al origen
+max_dist = max(
+    np.linalg.norm(star.base_homogeneous[:3])
+    for star in stars
+)
+# Ajustamos el far plane a un poco más allá de la estrella más lejana
+state['far'] = max_dist * 1.1
+
 
 def main():
-    pygame.init()
-    font = pygame.font.SysFont(None, 20)
-    info = pygame.display.Info()
-    WIDTH = info.current_w
-    HEIGHT = info.current_h
-    screen = pygame.display.set_mode((WIDTH, HEIGHT))
-    clock = pygame.time.Clock()
-
-    # Calculate center based on window size
-    CENTER = (WIDTH // 2, HEIGHT // 2)
-
-    # Load data
-    stars = load_stars()
-    star_lookup = {star.hr: star for star in stars}
-    constellations = load_constellations(star_lookup)
-
     running = True
     while running:
         # Compute delta time (seconds)
@@ -56,42 +63,23 @@ def main():
         M_modelview = compose_transformations(operations)
 
         # 3) Perspective projection
-        P = perspective_matrix(state['fov'], WIDTH/HEIGHT, state['near'], state['far'])
+        P = perspective_matrix(state['fov'], ASPECT, state['near'], state['far'])
         M_final = P @ M_modelview
 
-        # 4) Transform and project stars
-        projected = {}
+        # Apply transform and project to screen coords
         for star in stars:
-            v = star.homogeneous
-            vt = M_final @ v
-            # Cull behind near plane or w<=0
-            if vt[3] <= 0:
-                continue
-            ndc = vt[:3] / vt[3]
-            # Convert NDC [-1..1] to pixel coords
-            px = (ndc[0] + 1) * 0.5 * WIDTH
-            py = (1 - ndc[1]) * 0.5 * HEIGHT
-            projected[star.hr] = (px, py)
+            star.apply_transformation(M_final)
+            x_h, y_h, z_h, w_h = star.homogeneous
+            x_ndc = x_h / w_h
+            y_ndc = y_h / w_h
+            # NDC (-1..1) to pixel coords
+            star.x = ( x_ndc + 1) * 0.5 * WIDTH
+            star.y = (1 - y_ndc) * 0.5 * HEIGHT
 
-        # 5) Draw
-        screen.fill((0, 0, 0))
-
-        # Draw constellations
-        for con in constellations:
-            pts = [projected.get(st.hr) for st in con.stars]
-            # Connect only existing projected points
-            for a, b in zip(pts, pts[1:]):
-                if a and b:
-                    pygame.draw.line(screen, (200, 200, 200), a, b, 1)
-
-        # Draw stars
-        for hr, (px, py) in projected.items():
-            pygame.draw.circle(screen, (255, 255, 255), (int(px), int(py)), 2)
-
-        # # Render constellations and stars
-        # draw_constellations(screen, constellations, CENTER, SCALE)
-        # draw_stars(screen, stars, CENTER, SCALE)
-        # draw_labels(screen, constellations, CENTER, SCALE, font)
+        # Render
+        screen.fill((0,0,0))
+        draw_constellations(screen, constellations)
+        draw_stars(screen, stars)
         pygame.display.flip()
 
     pygame.quit()    

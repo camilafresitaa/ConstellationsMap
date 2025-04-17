@@ -4,82 +4,66 @@ import pygame
 def handle_events(state, dt):
     """
     Process user input to update transformation state.
-    Returns False to quit, True to continue.
 
-    state keys:
-      - angle (float)
-      - tx, ty (float)
-      - scale (float)
-      - reflect (bool)
-      - shx, shy (float)
-    dt: time delta in seconds since last frame
+    Parameters:
+        state (dict): Camera state, expects keys:
+            - cam_x, cam_y, cam_z (float): camera position
+            - yaw, pitch, roll (float): camera orientation angles in degrees
+            - move_speed (float): movement speed units per second
+            - mouse_sens (float): mouse sensitivity for looking around
+        dt (float): Time delta in seconds since last frame.
+    
+    Returns:
+        bool: False if user requests quit, True otherwise.
     """
-    # Discrete events
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             return False
-        
-        if event.type == pygame.KEYDOWN:
-            # Reflect toggle
-            if event.key == pygame.K_f:
-                state["reflect"] = not state["reflect"]
-            # Reset
-            elif event.key == pygame.K_r:
-                state.update({
-                    'angle': 0.0,
-                    'tx': 0.0,
-                    'ty': 0.0,
-                    'scale': 1.0,
-                    'reflect': False,
-                    'shx': 0.0,
-                    'shy': 0.0
-                })
+        if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+            state['moving'] = True
+            # Start capturing relative mouse movement
+            pygame.mouse.get_rel()
+        elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+            state['moving'] = False
 
-    # Continuos key state for smooth transforms
-    keys = pygame.key.get_pressed()
+    # Always fetch mouse delta to clear internal queue
+    mx, my = pygame.mouse.get_rel()
+    
+    if state.get('moving', False):
+        # Keyboard movement
+        keys = pygame.key.get_pressed()
+        # Forward/back
+        if keys[pygame.K_w]: state['cam_z'] += state['move_speed'] * dt
+        if keys[pygame.K_s]: state['cam_z'] -= state['move_speed'] * dt
+        # Left/right
+        if keys[pygame.K_a]: state['cam_x'] -= state['move_speed'] * dt
+        if keys[pygame.K_d]: state['cam_x'] += state['move_speed'] * dt
+        # Up/down
+        if keys[pygame.K_q]: state['cam_y'] -= state['move_speed'] * dt
+        if keys[pygame.K_e]: state['cam_y'] += state['move_speed'] * dt
 
-    # Rotation (degrees per second)
-    ROT_SPEED = 50
-    if keys[pygame.K_q] or keys[pygame.K_LEFT]:
-        state["angle"] -= ROT_SPEED * dt
-    if keys[pygame.K_e] or keys[pygame.K_RIGHT]:
-        state['angle'] += ROT_SPEED * dt
+        # Mouse look (yaw/pitch)
+        state['yaw']   += mx * state['mouse_sens']
+        state['pitch'] -= my * state['mouse_sens']
 
-    # Zoom (scale factor per second)
-    ZOOM_SPEED = 1.005
-    if keys[pygame.K_PLUS] or keys[pygame.K_EQUALS]:
-        state['scale'] *= 1 + ZOOM_SPEED * dt
-    if keys[pygame.K_MINUS]:
-        state['scale'] /= 1 + ZOOM_SPEED * dt
-
-    # Translation (units per second)
-    TRANSLATION_SPEED = 50
-    if keys[pygame.K_a]:
-        state['tx'] -= TRANSLATION_SPEED * dt
-    if keys[pygame.K_d]:
-        state['tx'] += TRANSLATION_SPEED * dt
-    if keys[pygame.K_w]:
-        state['ty'] -= TRANSLATION_SPEED * dt
-    if keys[pygame.K_s]:
-        state['ty'] += TRANSLATION_SPEED * dt
-
-    # Shear (factor per second)
-    SHEAR_SPEED = 1.0
-    if keys[pygame.K_z]:
-        state['shx'] -= SHEAR_SPEED * dt
-    if keys[pygame.K_x]:
-        state['shx'] += SHEAR_SPEED * dt
-    if keys[pygame.K_c]:
-        state['shy'] -= SHEAR_SPEED * dt
-    if keys[pygame.K_v]:
-        state['shy'] += SHEAR_SPEED * dt    
+        # Clamp pitch to avoid flip
+        state['pitch'] = max(-89.9, min(89.9, state['pitch']))
 
     return True
 
 
 def build_operations(state):
     """
-    Build the list of transformation operations for compose_transformations().
+    Build the list of 4x4 transformation dicts representing the inverse camera transform.
+    
+    The operations, in order, are:
+      1) Translate by (-cam_x, -cam_y, -cam_z)
+      2) Rotate around X by -pitch
+      3) Rotate around Y by -yaw
+      4) Rotate around Z by -roll
+
+    Returns:
+        list: List of dicts for compose_transformations.
     """
     operations = []
     operations.append({'type': 'rotate_y', 'angle': -state['yaw']})

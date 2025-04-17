@@ -22,6 +22,8 @@ def parse_catalog_line(line):
     DEm = line[86:88].strip()
     DEs = line[88:90].strip()
     Vmag = line[102:107].strip()
+    n_Parallax = line[161:162].strip()
+    Parallax  = line[162:167].strip()
 
     # Check that all the necessary fields for RA and Dec are present
     if not (RAh and RAm and RAs and DEd and DEm and DEs):
@@ -43,6 +45,12 @@ def parse_catalog_line(line):
     except ValueError as e:
         raise ValueError("Error converting Dec to float.") from e
     
+    try:
+        par = float(Parallax)
+        dist = 1.0 / par
+    except:
+        dist = 1.0  
+    
     return {
         "HR": HR,
         "Name": Name,
@@ -50,7 +58,8 @@ def parse_catalog_line(line):
         "RA_deg": RA_deg,
         "Dec_J2000": Dec_J2000,
         "Dec_deg": Dec_deg,
-        "Vmag": Vmag
+        "Vmag": Vmag,
+        "Dist": dist
     }
 
 
