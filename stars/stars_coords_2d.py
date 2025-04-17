@@ -1,6 +1,6 @@
 import numpy as np
 import math
-from bsc_parser import read_bsc_file
+from stars.bsc_parser import read_bsc_file
 
 
 def convert_to_2d(ra_deg, dec_deg, RA0, Dec0):
@@ -75,5 +75,5 @@ def stars_coords():
         print(f"{star["HR"]}: x = {star["x"]}, y = {star["y"]}, Homogeneous = {star['homogeneous']}")
 
 
-if __name__ == "__main__":
-    stars_coords()
+# if __name__ == "__main__":
+#     stars_coords()

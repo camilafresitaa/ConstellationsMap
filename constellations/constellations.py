@@ -1,4 +1,4 @@
-from constellations_parser import read_constellations
+from constellations.constellations_parser import read_constellations
 
 class Constellation():
     """

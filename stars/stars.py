@@ -1,5 +1,5 @@
 import numpy as np
-from stars_coords_2d import stars_coords
+from stars.stars_coords_2d import stars_coords
 
 class Star():
     """
