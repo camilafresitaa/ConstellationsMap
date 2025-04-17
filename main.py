@@ -6,21 +6,22 @@ from scr.transformations import compose_transformations
 from input.events import handle_events, build_operations
 
 
-# SCREEN SEETINGS
-WIDTH = 800
-HEIGHT = 600
+# Frames per second
 FPS = 60
-
-# Initial view parameters
-CENTER = (WIDTH // 2, HEIGHT // 2)
-SCALE = 50  # Pixels per map unit
-
+# Base scale (pixels per map unit)
+SCALE = 50
 
 def main():
     # Initialize Pygame
     pygame.init()
+    info = pygame.display.Info()
+    WIDTH = info.current_w
+    HEIGHT = info.current_h
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     clock = pygame.time.Clock()
+
+    # Calculate center based on window size
+    CENTER = (WIDTH // 2, HEIGHT // 2)
 
     # Load and bind data
     stars = load_stars()
