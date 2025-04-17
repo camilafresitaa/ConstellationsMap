@@ -196,7 +196,7 @@ def compose_transformations(transformations):
             - "reflect": {"axis": "x"|"y"|"both"}
 
     Returns:
-        numpy.array: The composite 3x3 transformation matrix.
+        numpy.ndarray: The composite 3x3 transformation matrix.
     
     """
 
