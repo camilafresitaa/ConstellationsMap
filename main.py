@@ -3,6 +3,7 @@ from stars.stars import load_stars
 from constellations.constellations import load_constellations
 from renderer.draw import draw_stars, draw_constellations
 from scr.transformations import compose_transformations
+from input.events import handle_events, build_operations
 
 
 # SCREEN SEETINGS
@@ -13,24 +14,6 @@ FPS = 60
 # Initial view parameters
 CENTER = (WIDTH // 2, HEIGHT // 2)
 SCALE = 50  # Pixels per map unit
-
-# Example starting operations (empty = no transform)
-opertions = []
-
-
-def handle_events(operations):
-    """
-    Process user input and update the list of transformations.
-    """
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            return False, operations    # ????
-        elif event.type == pygame.KEYDOWN:
-            # RESET
-            if event.key == pygame.K_r:
-                operations = []
-            # CONTROLS: add rotation, zoom, translation, reflection, shear controls
-    return True, operations
 
 
 def main():
@@ -44,31 +27,40 @@ def main():
     star_lookup = {star.hr: star for star in stars}
     constellations = load_constellations(star_lookup)
 
+    # Initial transformation state
+    state = {
+        'angle': 0.0,
+        'tx': 0.0,
+        'ty': 0.0,
+        'scale': 1.0,
+        'reflect': False,
+        'shx': 0.0,
+        'shy': 0.0
+    }
+
     running = True
-    operations = []
-
     while running:
-        # Handle input events
-        running, operations = handle_events(operations)
+        # Compute delta time (seconds)
+        dt = clock.tick(FPS) / 1000.0
 
-        # Compose composite transform matrix
-        transform_matrix = compose_transformations(operations)
+        # Process events and update state
+        running = handle_events(state, dt)
+
+        # Build and compose transformation matrix
+        operations = build_operations(state)
+        matrix = compose_transformations(operations)
 
         # Apply transformation to all stars
         for star in stars:
-            star.apply_transformation(transform_matrix)
+            star.apply_transformation(matrix)
 
         # Clear screen
         screen.fill((0, 0, 0))
 
-        # Draw constellations (lines first)
+        # Render constellations and stars
         draw_constellations(screen, constellations, CENTER, SCALE)
-        # Draw stars (on top)
         draw_stars(screen, stars, CENTER, SCALE)
-
-        # Update display
         pygame.display.flip()
-        clock.tick(FPS)
 
     pygame.quit()    
 
