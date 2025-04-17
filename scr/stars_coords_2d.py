@@ -42,7 +42,7 @@ def add_homogeneous_coord(x, y):
     return np.array([x, y, 1])
 
 
-def main():
+def stars_coords():
     filepath = "data/ybsc5"
     stars = read_bsc_file(filepath)
 
@@ -68,6 +68,8 @@ def main():
         star["homogeneous"] = add_homogeneous_coord(x, y)
         stars_2d.append(star)
 
+    return stars
+
     # Display the first 5 stars with their 2D and homogeneous coordinates for verification
     print("First 5 stars with 2D coordinates (x, y) and homogeneous coordinates:")
     for star in stars_2d[:5]:
@@ -75,4 +77,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    stars_coords()
