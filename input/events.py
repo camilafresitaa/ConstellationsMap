@@ -14,7 +14,6 @@ def handle_events(state, dt):
       - shx, shy (float)
     dt: time delta in seconds since last frame
     """
-    # Discrete events
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             return False
@@ -37,15 +36,21 @@ def handle_events(state, dt):
             # Overlay
             elif event.key == pygame.K_h:
                 state["overlay"] = not state["overlay"]
+            # Constelations on/off
+            elif event.key == pygame.K_PERIOD:
+                state["constellations"] = not state["constellations"]
+            elif event.key == pygame.K_l:
+                state["labels"] = not state["labels"]
+            
 
     # Continuos key state for smooth transforms
     keys = pygame.key.get_pressed()
 
     # Rotation (degrees per second)
     ROT_SPEED = 30
-    if keys[pygame.K_q] or keys[pygame.K_LEFT]:
+    if keys[pygame.K_q]:
         state["angle"] -= ROT_SPEED * dt
-    if keys[pygame.K_e] or keys[pygame.K_RIGHT]:
+    if keys[pygame.K_e]:
         state['angle'] += ROT_SPEED * dt
 
     # Zoom (scale factor per second)

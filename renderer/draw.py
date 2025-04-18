@@ -2,7 +2,7 @@ import pygame
 import math
 
 
-def draw_stars(surface, stars, center, scale, color=(255, 255, 255), min_size=0.5, max_size=4, min_alpha=30, max_alpha=255):
+def draw_stars(surface, stars, center, scale, color=(255, 255, 255), min_size=1, max_size=4, min_alpha=30, max_alpha=255):
     """
     Draw each star as a filled circle on the given surface.
 

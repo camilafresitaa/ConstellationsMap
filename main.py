@@ -38,7 +38,9 @@ def main():
         'reflect': False,
         'shx': 0.0,
         'shy': 0.0,
-        'overlay': False
+        'overlay': False,
+        'constellations': True,
+        'labels': True
     }
 
     running = True
@@ -61,19 +63,21 @@ def main():
         screen.fill((0, 0, 0))
 
         # Render constellations and stars
-        draw_constellations(screen, constellations, CENTER, SCALE)
         draw_stars(screen, stars, CENTER, SCALE)
-        draw_labels(screen, constellations, CENTER, SCALE, font)
-
+        if state["constellations"]:
+            draw_constellations(screen, constellations, CENTER, SCALE)
+        if state["labels"]:
+            draw_labels(screen, constellations, CENTER, SCALE, font)
 
         # Show overlay if active
         if state["overlay"]:
-            overlay_surf = pygame.Surface((300, 220), pygame.SRCALPHA)
+            overlay_surf = pygame.Surface((130, 280), pygame.SRCALPHA)
             overlay_surf.fill((0, 0, 0, 180))
 
             lines = [
                 "Constellations Map",
-                "------------------------",
+                "----------------------------------",
+                "Controls:",
                 "[H] Toggle Help",
                 "[R] Reset",
                 "[F] Reflect",
@@ -81,7 +85,10 @@ def main():
                 "[WASD] Move",
                 "[+/-] Zoom",
                 "[Z/X/C/V] Shear",
-                "",
+                "----------------------------------",
+                "Values:",
+                f"Constellations: {'On' if state['constellations'] else 'Off'}",
+                f"Labels: {'On' if state['labels'] else 'Off'}",
                 f"Angle: {state['angle']:.1f}",
                 f"Scale: {state['scale']:.2f}",
                 f"TX: {state['tx']:.2f}   TY: {state['ty']:.2f}",
@@ -93,7 +100,7 @@ def main():
                 text_surf = font.render(text, True, (255, 255, 255))
                 overlay_surf.blit(text_surf, (10, 10 + i * 15))
 
-            screen.blit(overlay_surf, (10, 10))
+            screen.blit(overlay_surf, (0, 0))
 
         pygame.display.flip()
 
