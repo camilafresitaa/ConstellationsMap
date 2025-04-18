@@ -1,4 +1,5 @@
 import pygame
+import math
 
 
 def draw_stars(surface, stars, center, scale, color=(255, 255, 255), min_size=0.5, max_size=4, min_alpha=30, max_alpha=255):
@@ -31,8 +32,14 @@ def draw_stars(surface, stars, center, scale, color=(255, 255, 255), min_size=0.
         norm = (max_v - star.vmag) / dv
 
         # Compute dynamic size and alpha
-        size = int(min_size + norm * (max_size - min_size))
-        alpha = int(min_alpha + norm * (max_alpha - min_alpha))
+        distance = math.sqrt(star.x**2 + star.y**2)
+        depth_factor = 1 / (1 + (distance * 0.15)**2)  # Ajustable value
+
+        size = int((min_size + norm * (max_size - min_size)) * depth_factor)
+        size = max(size, 1)
+
+        alpha = int((min_alpha + norm * (max_alpha - min_alpha)) * depth_factor)
+        alpha = max(alpha, 1)
 
         # Convert star coords to screen pixels
         px = cx - star.x * scale
