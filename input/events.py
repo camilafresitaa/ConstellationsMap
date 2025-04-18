@@ -39,7 +39,7 @@ def handle_events(state, dt):
     keys = pygame.key.get_pressed()
 
     # Rotation (degrees per second)
-    ROT_SPEED = 50
+    ROT_SPEED = 30
     if keys[pygame.K_q] or keys[pygame.K_LEFT]:
         state["angle"] -= ROT_SPEED * dt
     if keys[pygame.K_e] or keys[pygame.K_RIGHT]:
@@ -53,7 +53,7 @@ def handle_events(state, dt):
         state['scale'] /= 1 + ZOOM_SPEED * dt
 
     # Translation (units per second)
-    TRANSLATION_SPEED = 50
+    TRANSLATION_SPEED = 2
     if keys[pygame.K_a]:
         state['tx'] -= TRANSLATION_SPEED * dt
     if keys[pygame.K_d]:

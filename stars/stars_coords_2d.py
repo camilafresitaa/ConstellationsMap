@@ -3,26 +3,41 @@ import math
 from stars.bsc_parser import read_bsc_file
 
 
+def angular_distance(ra1, dec1, ra2, dec2):
+    """
+    Compute angular distance between (ra1, dec1) and (ra2, dec2) in degrees.
+    """
+    ra1, ra2 = math.radians(ra1), math.radians(ra2)
+    dec1, dec2 = math.radians(dec1), math.radians(dec2)
+
+    cos_angle = math.sin(dec1)*math.sin(dec2) + math.cos(dec1)*math.cos(dec2)*math.cos(ra1 - ra2)
+    return math.degrees(math.acos(min(1, max(-1, cos_angle))))
+
+
 def convert_to_2d(ra_deg, dec_deg, RA0, Dec0):
     """
-    Convert spherical coordinates (RA, Dec in degrees) to 2D Cartesian coordinates
-    using an equirectangular projection.
-
-    Parameters:
-        ra_deg (float): Right Ascension in degrees.
-        dec_deg (float): Declination in degrees.
-        RA0 (float): Reference Right Ascension in degrees (center of the map).
-        Dec0 (float): Reference Decliantion in degrees (center of the map).
-
-    Returns:
-        tuple: (x, y) coordinates in 2D.        
+    Stereographic projection of (RA, Dec) onto 2D plane centered at (RA0, Dec0).
     """
 
-    # Adjust the x coordinate by the cosine of the central declination (reduce distortion)
-    x = (ra_deg - RA0) * math.cos(math.radians(Dec0))
+    # Convert all angles to radians
+    ra = math.radians(ra_deg)
+    dec = math.radians(dec_deg)
+    ra0 = math.radians(RA0)
+    dec0 = math.radians(Dec0)
 
-    # y coordinate is simply the difference in declination
-    y = dec_deg - Dec0
+    # Angular distance between star and center (great-circle distance)
+    cos_c = math.sin(dec0)*math.sin(dec) + math.cos(dec0)*math.cos(dec)*math.cos(ra - ra0)
+    c = math.acos(min(1, max(-1, cos_c)))  # clamp para evitar errores numéricos
+
+    # Avoid division by 0
+    if c == 0:
+        return 0, 0
+
+    # Stereographic projection formula
+    k = 2 / (1 + cos_c)
+
+    x = k * math.cos(dec) * math.sin(ra - ra0)
+    y = k * (math.cos(dec0)*math.sin(dec) - math.sin(dec0)*math.cos(dec)*math.cos(ra - ra0))
 
     return x, y
 
@@ -67,13 +82,4 @@ def stars_coords():
         star["Homogeneous"] = add_homogeneous_coord(x, y)
         stars_2d.append(star)
 
-    return stars_2d
-
-    # Display the first 5 stars with their 2D and homogeneous coordinates for verification
-    print("First 5 stars with 2D coordinates (x, y) and homogeneous coordinates:")
-    for star in stars_2d[:5]:
-        print(f"{star["HR"]}: x = {star["x"]}, y = {star["y"]}, Homogeneous = {star['homogeneous']}")
-
-
-# if __name__ == "__main__":
-#     stars_coords()
+    return stars_2d, RA0, Dec0

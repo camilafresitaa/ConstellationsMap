@@ -9,12 +9,12 @@ from input.events import handle_events, build_operations
 # Frames per second
 FPS = 60
 # Base scale (pixels per map unit)
-SCALE = 50
+SCALE = 1000
 
 def main():
     # Initialize Pygame
     pygame.init()
-    font = pygame.font.SysFont(None, 20)
+    font = pygame.font.SysFont(None, 15)
     info = pygame.display.Info()
     WIDTH = info.current_w
     HEIGHT = info.current_h
@@ -25,9 +25,9 @@ def main():
     CENTER = (WIDTH // 2, HEIGHT // 2)
 
     # Load and bind data
-    stars = load_stars()
+    stars, RA0, Dec0 = load_stars()
     star_lookup = {star.hr: star for star in stars}
-    constellations = load_constellations(star_lookup)
+    constellations = load_constellations(star_lookup, RA0, Dec0)
 
     # Initial transformation state
     state = {

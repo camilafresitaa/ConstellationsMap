@@ -86,13 +86,13 @@ def draw_labels(surface, constellations, center, scale, font, color=(255,255,0))
         if not constellation.stars:
             continue
 
-        # 1. Para cada estrella, dibujar su HR
-        for star in constellation.stars:
-            px = cx - star.x * scale
-            py = cy - star.y * scale
-            label_surf = font.render(str(star.hr), True, color)  # star.hr está en Star :contentReference[oaicite:2]{index=2}&#8203;:contentReference[oaicite:3]{index=3}
-            # Ajustar un poco la posición para que no solape la estrella
-            surface.blit(label_surf, (int(px) + 4, int(py) - 4))
+        # # 1. Para cada estrella, dibujar su HR
+        # for star in constellation.stars:
+        #     px = cx - star.x * scale
+        #     py = cy - star.y * scale
+        #     label_surf = font.render(str(star.hr), True, color)  # star.hr está en Star :contentReference[oaicite:2]{index=2}&#8203;:contentReference[oaicite:3]{index=3}
+        #     # Ajustar un poco la posición para que no solape la estrella
+        #     surface.blit(label_surf, (int(px) + 4, int(py) - 4))
 
         # 2. Dibujar el nombre de la constelación en su centroide
         avg_x = sum(star.x for star in constellation.stars) / len(constellation.stars)

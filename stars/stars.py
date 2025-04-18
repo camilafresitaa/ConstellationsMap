@@ -5,7 +5,7 @@ class Star():
     """
     Represents a star with...
     """
-    def __init__(self, HR: int, name: str, vmag: float, x: float, y: float, homogeneous: np.array):
+    def __init__(self, HR: int, name: str, vmag: float, x: float, y: float, homogeneous: np.array, ra_deg: float, dec_deg: float):
         self.hr = HR
         self.name = name
         self.vmag = vmag
@@ -13,6 +13,8 @@ class Star():
         self.y = y
         self.homogeneous = homogeneous.copy()
         self.base_homogeneous = homogeneous.copy()
+        self.ra_deg = ra_deg
+        self.dec_deg = dec_deg
 
     def __repr__(self):
         return(f"Star {self.hr}: ({self.x}, {self.y})")
@@ -34,7 +36,7 @@ def load_stars():
     """
     Return list of Star instances.
     """
-    stars_2d = stars_coords()
+    stars_2d, RA0, Dec0 = stars_coords()
     stars = []
 
     for s in stars_2d:
@@ -44,8 +46,10 @@ def load_stars():
             vmag=float(s["Vmag"]), 
             x=s["x"],
             y=s["y"],
-            homogeneous=s["Homogeneous"]
+            homogeneous=s["Homogeneous"],
+            ra_deg=s["RA_deg"],
+            dec_deg=s["Dec_deg"]
             )
         stars.append(star)
 
-    return stars
+    return stars, RA0, Dec0
