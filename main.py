@@ -47,6 +47,9 @@ def main():
     last_mouse_pos = (0, 0)
     scroll_delta_y = 0.0
 
+    rotating = False
+    last_rotation_pos = 0
+
     running = True
     while running:
         # Compute delta time (seconds)
@@ -86,6 +89,22 @@ def main():
                 last_mouse_pos = mouse_pos
         else:
             dragging = False
+
+
+        # Rotación con botón derecho
+        if mouse_buttons[2]:  # botón derecho
+            if not rotating:
+                rotating = True
+                last_rotation_pos = mouse_pos[0]
+            else:
+                dx = mouse_pos[0] - last_rotation_pos
+                # Ajuste del ángulo (ajustable: más grande → más sensible)
+                state['angle'] += dx * 0.2
+                last_rotation_pos = mouse_pos[0]
+        else:
+            rotating = False
+
+            
 
         # Build and compose transformation matrix
         operations = build_operations(state)
