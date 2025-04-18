@@ -34,6 +34,9 @@ def handle_events(state, dt):
                     'shx': 0.0,
                     'shy': 0.0
                 })
+            # Overlay
+            elif event.key == pygame.K_h:
+                state["overlay"] = not state["overlay"]
 
     # Continuos key state for smooth transforms
     keys = pygame.key.get_pressed()

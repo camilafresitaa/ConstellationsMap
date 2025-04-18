@@ -37,7 +37,8 @@ def main():
         'scale': 1.0,
         'reflect': False,
         'shx': 0.0,
-        'shy': 0.0
+        'shy': 0.0,
+        'overlay': False
     }
 
     running = True
@@ -63,6 +64,37 @@ def main():
         draw_constellations(screen, constellations, CENTER, SCALE)
         draw_stars(screen, stars, CENTER, SCALE)
         draw_labels(screen, constellations, CENTER, SCALE, font)
+
+
+        # Show overlay if active
+        if state["overlay"]:
+            overlay_surf = pygame.Surface((300, 220), pygame.SRCALPHA)
+            overlay_surf.fill((0, 0, 0, 180))
+
+            lines = [
+                "Constellations Map",
+                "------------------------",
+                "[H] Toggle Help",
+                "[R] Reset",
+                "[F] Reflect",
+                "[Q/E] Rotate",
+                "[WASD] Move",
+                "[+/-] Zoom",
+                "[Z/X/C/V] Shear",
+                "",
+                f"Angle: {state['angle']:.1f}",
+                f"Scale: {state['scale']:.2f}",
+                f"TX: {state['tx']:.2f}   TY: {state['ty']:.2f}",
+                f"SHX: {state['shx']:.2f}  SHY: {state['shy']:.2f}",
+                f"Reflect: {'Yes' if state['reflect'] else 'No'}"
+            ]
+
+            for i, text in enumerate(lines):
+                text_surf = font.render(text, True, (255, 255, 255))
+                overlay_surf.blit(text_surf, (10, 10 + i * 15))
+
+            screen.blit(overlay_surf, (10, 10))
+
         pygame.display.flip()
 
     pygame.quit()    
