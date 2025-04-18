@@ -38,10 +38,14 @@ def main():
         'reflect': False,
         'shx': 0.0,
         'shy': 0.0,
-        'overlay': False,
+        'overlay': True,
         'constellations': True,
         'labels': True
     }
+
+    dragging = False
+    last_mouse_pos = (0, 0)
+    scroll_delta_y = 0.0
 
     running = True
     while running:
@@ -49,10 +53,46 @@ def main():
         dt = clock.tick(FPS) / 1000.0
 
         # Process events and update state
-        running = handle_events(state, dt)
+        events = pygame.event.get()
+        for event in events:
+            if event.type == pygame.QUIT:
+                running = False
+            elif event.type == pygame.MOUSEWHEEL:
+                scroll_delta_y += event.y
+
+        # Procesar teclas y estado continuo
+        running = handle_events(state, dt, events)
+
+
+
+
+        # Obtener posición del mouse
+        mouse_buttons = pygame.mouse.get_pressed()
+        mouse_pos = pygame.mouse.get_pos()
+
+
+        
+
+        # Translation with mouse
+        if mouse_buttons[0]:
+            if not dragging:
+                dragging = True
+                last_mouse_pos = mouse_pos
+            else:
+                dx = mouse_pos[0] - last_mouse_pos[0]
+                dy = mouse_pos[1] - last_mouse_pos[1]
+                state['tx'] -= dx / (SCALE * state['scale'])  # adaptar al mapa
+                state['ty'] -= dy / (SCALE * state['scale'])
+                last_mouse_pos = mouse_pos
+        else:
+            dragging = False
 
         # Build and compose transformation matrix
         operations = build_operations(state)
+        if scroll_delta_y != 0.0:
+            zoom_factor = 1.0 + scroll_delta_y * 0.05  # ajuste fino
+            state['scale'] *= zoom_factor
+            scroll_delta_y = 0.0
         matrix = compose_transformations(operations)
 
         # Apply transformation to all stars

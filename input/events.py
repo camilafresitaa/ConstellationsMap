@@ -1,7 +1,7 @@
 import pygame
 
 
-def handle_events(state, dt):
+def handle_events(state, dt, events):
     """
     Process user input to update transformation state.
     Returns False to quit, True to continue.
@@ -14,7 +14,7 @@ def handle_events(state, dt):
       - shx, shy (float)
     dt: time delta in seconds since last frame
     """
-    for event in pygame.event.get():
+    for event in events:
         if event.type == pygame.QUIT:
             return False
         
