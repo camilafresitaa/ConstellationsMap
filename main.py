@@ -10,6 +10,9 @@ from input.events import handle_events, build_operations
 FPS = 60
 # Base scale (pixels per map unit)
 SCALE = 1000
+DEFAULT_ZOOM = 0.4
+MOUSE_TRANSLATION_SPEED = 2.0 
+
 
 def main():
     # Initialize Pygame
@@ -34,8 +37,9 @@ def main():
         'angle': 0.0,
         'tx': 0.0,
         'ty': 0.0,
-        'scale': 1.0,
-        'reflect': False,
+        'scale': DEFAULT_ZOOM,
+        'reflect_x': False,
+        'reflect_y': False,
         'shx': 0.0,
         'shy': 0.0,
         'overlay': True,
@@ -84,8 +88,8 @@ def main():
             else:
                 dx = mouse_pos[0] - last_mouse_pos[0]
                 dy = mouse_pos[1] - last_mouse_pos[1]
-                state['tx'] -= dx / (SCALE * state['scale'])  # adaptar al mapa
-                state['ty'] -= dy / (SCALE * state['scale'])
+                state['tx'] -= dx * MOUSE_TRANSLATION_SPEED / (SCALE * state['scale'])
+                state['ty'] -= dy * MOUSE_TRANSLATION_SPEED / (SCALE * state['scale'])
                 last_mouse_pos = mouse_pos
         else:
             dragging = False
@@ -130,7 +134,7 @@ def main():
 
         # Show overlay if active
         if state["overlay"]:
-            overlay_surf = pygame.Surface((130, 280), pygame.SRCALPHA)
+            overlay_surf = pygame.Surface((130, 350), pygame.SRCALPHA)
             overlay_surf.fill((0, 0, 0, 180))
 
             lines = [
@@ -141,7 +145,8 @@ def main():
                 "[.] Show Constellations",
                 "[L] Show Labels",
                 "[R] Reset",
-                "[F] Reflect",
+                "[F] Reflect X",
+                "[G] Reflect Y",
                 "[Q/E] Rotate",
                 "[WASD] Move",
                 "[+/-] Zoom",
@@ -151,10 +156,11 @@ def main():
                 f"Constellations: {'On' if state['constellations'] else 'Off'}",
                 f"Labels: {'On' if state['labels'] else 'Off'}",
                 f"Angle: {state['angle']:.1f}",
-                f"Scale: {state['scale']:.2f}",
+                f"Zoom: {state['scale'] / DEFAULT_ZOOM:.2f}x",
                 f"TX: {state['tx']:.2f}   TY: {state['ty']:.2f}",
                 f"SHX: {state['shx']:.2f}  SHY: {state['shy']:.2f}",
-                f"Reflect: {'Yes' if state['reflect'] else 'No'}"
+                f"Reflect X: {'Yes' if state['reflect_x'] else 'No'}",
+                f"Reflect Y: {'Yes' if state['reflect_y'] else 'No'}",
             ]
 
             for i, text in enumerate(lines):

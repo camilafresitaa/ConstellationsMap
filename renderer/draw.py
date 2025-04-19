@@ -29,7 +29,11 @@ def draw_stars(surface, stars, center, scale, zoom_level=1.0, color=(255, 255, 2
 
     for star in stars:
 
-        visibility_limit = 6.5 + 5.5 * math.log10(zoom_level + 1e-5)
+        # visibility_limit = 6.5 + 5.5 * math.log10(zoom_level + 1e-5)
+
+        DEFAULT_SCALE = 0.3
+        zoom_relative = zoom_level / DEFAULT_SCALE
+        visibility_limit = 5.5 + 6 * math.log10(zoom_relative + 1e-5)
         if star.vmag > visibility_limit:
             continue    
 

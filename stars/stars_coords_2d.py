@@ -76,6 +76,17 @@ def stars_coords():
     stars_2d = []
     for star in stars:
         x, y = convert_to_2d(star["RA_deg"], star["Dec_deg"], RA0, Dec0)
+
+        # ✨ Estiramiento suave hacia afuera según distancia radial
+        r = math.sqrt(x**2 + y**2)
+        r_max = 10  # valor típico en proyección estereográfica (ajústalo si quieres)
+        stretch_factor = 3  # cuanto más se expanden las del centro
+
+        stretch = 1 + (1 - min(r / r_max, 1)) * stretch_factor  # de 1 a 1.5 aprox.
+        x *= stretch
+        y *= stretch
+
+
         star["x"] = x
         star["y"] = y
         # Add homogeneous coordinate representation [x, y, 1] 
