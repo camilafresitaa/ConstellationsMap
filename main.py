@@ -40,7 +40,7 @@ def main():
         'shy': 0.0,
         'overlay': True,
         'constellations': True,
-        'labels': True
+        'labels': False
     }
 
     dragging = False
@@ -122,11 +122,11 @@ def main():
         screen.fill((0, 0, 0))
 
         # Render constellations and stars
-        draw_stars(screen, stars, CENTER, SCALE)
+        draw_stars(screen, stars, CENTER, SCALE * state["scale"], zoom_level=state["scale"])
         if state["constellations"]:
-            draw_constellations(screen, constellations, CENTER, SCALE)
+            draw_constellations(screen, constellations, CENTER, SCALE * state["scale"])
         if state["labels"]:
-            draw_labels(screen, constellations, CENTER, SCALE, font)
+            draw_labels(screen, constellations, CENTER, SCALE * state["scale"], font)
 
         # Show overlay if active
         if state["overlay"]:
@@ -138,6 +138,8 @@ def main():
                 "----------------------------------",
                 "Controls:",
                 "[H] Toggle Help",
+                "[.] Show Constellations",
+                "[L] Show Labels",
                 "[R] Reset",
                 "[F] Reflect",
                 "[Q/E] Rotate",
