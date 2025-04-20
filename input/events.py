@@ -41,8 +41,12 @@ def handle_events(state, dt, events):
             # Constelations on/off
             elif event.key == pygame.K_PERIOD:
                 state["constellations"] = not state["constellations"]
+            # Constellations names on/off
             elif event.key == pygame.K_l:
                 state["labels"] = not state["labels"]
+            # Stars HRs on/off
+            elif event.key == pygame.K_k:
+                state["show_hr"] = not state["show_hr"]
             
 
     # Continuos key state for smooth transforms

@@ -1,7 +1,7 @@
 import pygame
 from stars.stars import load_stars
 from constellations.constellations import load_constellations
-from renderer.draw import draw_stars, draw_constellations, draw_labels
+from renderer.draw import draw_stars, draw_constellations, draw_labels, draw_hr_labels
 from scr.transformations import compose_transformations
 from input.events import handle_events, build_operations
 
@@ -44,7 +44,8 @@ def main():
         'shy': 0.0,
         'overlay': True,
         'constellations': True,
-        'labels': False
+        'labels': False,
+        'show_hr': False
     }
 
     dragging = False
@@ -131,6 +132,8 @@ def main():
             draw_constellations(screen, constellations, CENTER, SCALE * state["scale"])
         if state["labels"]:
             draw_labels(screen, constellations, CENTER, SCALE * state["scale"], font)
+        if state["show_hr"]:
+            draw_hr_labels(screen, stars, CENTER, SCALE * state["scale"], state["scale"], font)
 
         # Show overlay if active
         if state["overlay"]:
@@ -143,7 +146,8 @@ def main():
                 "Controls:",
                 "[H] Toggle Help",
                 "[.] Show Constellations",
-                "[L] Show Labels",
+                "[L] Show Names",
+                "[K] Show Stars HRs",
                 "[R] Reset",
                 "[F] Reflect X",
                 "[G] Reflect Y",
@@ -154,7 +158,8 @@ def main():
                 "----------------------------------",
                 "Values:",
                 f"Constellations: {'On' if state['constellations'] else 'Off'}",
-                f"Labels: {'On' if state['labels'] else 'Off'}",
+                f"Constellations Names: {'On' if state['labels'] else 'Off'}",
+                f"Stars HRs: {'On' if state['show_hr'] else 'Off'}",
                 f"Angle: {state['angle']:.1f}",
                 f"Zoom: {state['scale'] / DEFAULT_ZOOM:.2f}x",
                 f"TX: {state['tx']:.2f}   TY: {state['ty']:.2f}",

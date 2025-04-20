@@ -120,3 +120,19 @@ def draw_labels(surface, constellations, center, scale, font, color=(255,255,0))
         # Centrar el texto sobre el punto medio
         w, h = name_surf.get_size()
         surface.blit(name_surf, (int(px - w/2), int(py - h/2)))
+
+
+def draw_hr_labels(surface, stars, center, scale, zoom_level, font, color=(200, 200, 255)):
+    cx, cy = center
+    for star in stars:
+        DEFAULT_SCALE = 0.3
+        zoom_relative = zoom_level / DEFAULT_SCALE
+        visibility_limit = 5.5 + 6 * math.log10(zoom_relative + 1e-5)
+        if star.vmag > visibility_limit:
+            continue
+
+        px = cx - star.x * scale
+        py = cy - star.y * scale
+        label = str(star.hr)
+        label_surf = font.render(label, True, color)
+        surface.blit(label_surf, (int(px + 5), int(py - 5)))
