@@ -34,8 +34,11 @@ def draw_stars(surface, stars, center, scale, zoom_level=1.0, color=(255, 255, 2
         DEFAULT_SCALE = 0.3
         zoom_relative = zoom_level / DEFAULT_SCALE
         visibility_limit = 5 + 7 * math.log10(zoom_relative + 1e-5)
+        fade_range = 1
+        fade_factor = max(0.0, min(1.0, (visibility_limit - star.vmag) / fade_range))
         if star.vmag > visibility_limit:
-            continue    
+            if fade_factor <= 0.001:
+                continue    
 
 
         # Normalize brightness
@@ -50,6 +53,7 @@ def draw_stars(surface, stars, center, scale, zoom_level=1.0, color=(255, 255, 2
 
         alpha = int((min_alpha + norm * (max_alpha - min_alpha)) * depth_factor)
         alpha = max(alpha, 1)
+        alpha = int(alpha * fade_factor)
 
         # Convert star coords to screen pixels
         px = cx - star.x * scale
