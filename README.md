@@ -5,8 +5,6 @@ This project is a star and constellation visualizer built entirely with **matrix
 
 **Constellations Map** visualizes stars from the Bright Star Catalog and draws recognized constellations based on HR numbers. It uses a **stereographic projection** to project the celestial sphere into 2D, and applies geometric transformations via 3x3 matrices to manipulate the star field interactively.
 
----
-
 ## Features & Transformations
 
 All transformations are implemented using **homogeneous coordinates** and **matrix multiplication only**:
@@ -18,8 +16,6 @@ All transformations are implemented using **homogeneous coordinates** and **matr
 | Scaling     | Zoom in/out by scaling x and y |
 | Reflection  | Mirror across x, y, or both axes |
 | Shearing    | Tilt the scene using shear matrices |
-
----
 
 ## Controls
 
@@ -40,8 +36,6 @@ Mouse Controls:
 - **Left-click + drag** → Move the scene
 - **Right-click + drag** → Rotate the scene
 
----
-
 ## Requirements
 
 - Python 3
@@ -56,8 +50,6 @@ Install dependencies:
 pip install numpy pygame
 ```
 
----
-
 ## Running the Project
 
 Just run the `main.py` script:
@@ -65,8 +57,6 @@ Just run the `main.py` script:
 ```bash
 python main.py
 ```
-
----
 
 ## Project Structure
 
@@ -89,5 +79,3 @@ main.py
  input/
     └️ events.py
 ```
-
----
