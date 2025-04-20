@@ -92,8 +92,13 @@ def main():
             else:
                 dx = mouse_pos[0] - last_mouse_pos[0]
                 dy = mouse_pos[1] - last_mouse_pos[1]
-                state['tx'] -= dx * MOUSE_TRANSLATION_SPEED / (SCALE * state['scale'])
-                state['ty'] -= dy * MOUSE_TRANSLATION_SPEED / (SCALE * state['scale'])
+
+                dx_sign = -1 if state.get("reflect_y", False) else 1
+                dy_sign = -1 if state.get("reflect_x", False) else 1
+
+                state['tx'] -= dx * dx_sign * MOUSE_TRANSLATION_SPEED / (SCALE * state['scale'])
+                state['ty'] -= dy * dy_sign * MOUSE_TRANSLATION_SPEED / (SCALE * state['scale'])
+
                 last_mouse_pos = mouse_pos
         else:
             dragging = False
@@ -140,7 +145,7 @@ def main():
 
         # Show overlay if active
         if state["overlay"]:
-            overlay_surf = pygame.Surface((150, 460), pygame.SRCALPHA)
+            overlay_surf = pygame.Surface((150, 480), pygame.SRCALPHA)
             overlay_surf.fill((0, 0, 0, 180))
 
             lines = [
@@ -155,7 +160,8 @@ def main():
                 "[+/-] Zoom",
                 "[Q/E] Rotate",
                 "[WASD] Move",
-                "[Z/X/C/V] Shear",
+                "[Z/X] Shear X",
+                "[C/V] Shear Y",
                 "[F] Reflect X",
                 "[G] Reflect Y",
                 "----------------------------------",

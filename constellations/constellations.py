@@ -1,7 +1,7 @@
 from constellations.constellations_parser import read_constellations
 from stars.stars_coords_2d import angular_distance
 
-MAX_ANGULAR_DISTANCE = 120
+MAX_ANGULAR_DISTANCE = 150
 
 class Constellation():
     """
