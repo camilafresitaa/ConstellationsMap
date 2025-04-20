@@ -1,14 +1,20 @@
 def parse_catalog_line(line):
     """
-    Parse a catalog line and extract the relevant fields.
+    Parse a single line of the Bright Star Catalog (BSC) and extract fields.
 
     Parameters:
-        line (str): The catalog line to parse.
+        line (str): Raw line from the catalog file.
 
     Returns:
-        dict: Dictionary containing the extracted fields (HR, Name, RA_J2000, Dec_J2000, Vmag).    
+        dict: Parsed star data with keys:
+            - HR (str): Harvard Revised number
+            - Name (str): Common name (if any)
+            - RA_J2000 (str): Right Ascension in h m s format
+            - Dec_J2000 (str): Declination in d m s format
+            - RA_deg (float): Right Ascension in decimal degrees
+            - Dec_deg (float): Declination in decimal degrees
+            - Vmag (str): Apparent visual magnitude
     """
-
     if len(line) < 107:
         raise ValueError("Line does not meet the minimum required length.")
     
@@ -56,15 +62,14 @@ def parse_catalog_line(line):
 
 def read_bsc_file(filepath):
     """
-    Read the catalog file and process each line to extract star information.
+    Read the Bright Star Catalog file and extract data for each line.
 
     Parameters:
-        filepath (str): Path to the data file.
+        filepath (str): Path to the catalog file.
 
     Returns:
-        list: List of dictionaries with information for each star.
+        list: List of star dictionaries parsed from the file.
     """
-
     stars = []
     try:
         with open(filepath, "r") as file:
@@ -83,16 +88,3 @@ def read_bsc_file(filepath):
         print(f"File {filepath} not found.")
 
     return stars
-
-
-def main():
-    filepath = "data/ybsc5"
-    stars = read_bsc_file(filepath)
-
-    # Display the first 5 records to verify
-    for star in stars[:5]:
-        print(star)
-
-
-if __name__ == "__main__":
-    main()

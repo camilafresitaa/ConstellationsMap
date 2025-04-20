@@ -2,7 +2,7 @@ import csv
 
 def read_constellations():
     """
-    Read the constellations dataset from a CSV file and return a list of dicts.
+    Read the constellations dataset from a CSV file.
 
     Expected CSV format per row:
         name, count, HR1, HR2, ..., HRn
@@ -10,13 +10,14 @@ def read_constellations():
     Parameters:
         filepath (str): Path to the constellations CSV file.
 
-    Returns:
-        List: A list of dictionaries containing the constellations data.
-        Each dictionary has:
-        - "Name": constellation name (str)
-        - "HR_sequence": list of HR numbers (list of int)
-    """
+    CSV format (one constellation per row):
+        name, count, HR1, HR2, ..., HRn
 
+    Returns:
+        list: List of dictionaries with keys:
+            - "Name" (str): Constellation name
+            - "HR_sequence" (list of int): Sequence of HR numbers defining the constellation
+    """
     constellations = []
     filepath = "data/constellations.csv"
 
@@ -41,11 +42,7 @@ def read_constellations():
                             continue
     
                 constellations.append({"Name": name, "HR_sequence": hr_seq})
-    
     except FileNotFoundError:
         print(f"File {filepath} not found.")
 
     return constellations
-    
-
-# print(read_constellations("data/constellations.csv"))

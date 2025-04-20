@@ -3,7 +3,7 @@ from stars.stars_coords_2d import stars_coords
 
 class Star():
     """
-    Represents a star with...
+    A star in the 2D projection space, with its properties and support for transformation using homogeneous coordinates.
     """
     def __init__(self, HR: int, name: str, vmag: float, x: float, y: float, homogeneous: np.array, ra_deg: float, dec_deg: float):
         self.hr = HR
@@ -11,8 +11,8 @@ class Star():
         self.vmag = vmag
         self.x = x
         self.y = y
+        self.base_homogeneous = homogeneous.copy()  # To reset if needed
         self.homogeneous = homogeneous.copy()
-        self.base_homogeneous = homogeneous.copy()
         self.ra_deg = ra_deg
         self.dec_deg = dec_deg
 
@@ -21,11 +21,11 @@ class Star():
     
     def apply_transformation(self, matrix: np.array):
         """
-        Apply a 3x3 transformation matrix to this star's homogeneous coordinate.
-        Updates x, y and the coordinate in place.
+        Applies a transformation matrix to this star's base homogeneous coordinate.
+        Updates its current position accordingly.
 
         Parameters:
-            matrix (np.ndarray): Composite 3x3 transformation.
+            matrix (np.ndarray): 3x3 transformation matrix.
         """
         new_homogeneous = matrix @ self.base_homogeneous
         self.homogeneous = new_homogeneous
@@ -34,11 +34,10 @@ class Star():
 
 def load_stars():
     """
-    Return list of Star instances.
+    Load star catalog and return list of Star objects with 2D coordinates and homogeneous vectors ready for transformation.
     """
     stars_2d, RA0, Dec0 = stars_coords()
     stars = []
-
     for s in stars_2d:
         star = Star(HR=
             int(s["HR"]), 
@@ -49,7 +48,7 @@ def load_stars():
             homogeneous=s["Homogeneous"],
             ra_deg=s["RA_deg"],
             dec_deg=s["Dec_deg"]
-            )
+        )
         stars.append(star)
 
     return stars, RA0, Dec0
