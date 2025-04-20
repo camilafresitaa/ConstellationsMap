@@ -17,7 +17,8 @@ MOUSE_TRANSLATION_SPEED = 2.0
 def main():
     # Initialize Pygame
     pygame.init()
-    font_info = pygame.font.SysFont(None, 17)
+    font_title = pygame.font.SysFont(None, 20)
+    font_text = pygame.font.SysFont(None, 17)
     font_const = pygame.font.SysFont(None, 17)
     font_hr = pygame.font.SysFont(None, 14)
     info = pygame.display.Info()
@@ -139,7 +140,7 @@ def main():
 
         # Show overlay if active
         if state["overlay"]:
-            overlay_surf = pygame.Surface((130, 380), pygame.SRCALPHA)
+            overlay_surf = pygame.Surface((150, 460), pygame.SRCALPHA)
             overlay_surf.fill((0, 0, 0, 180))
 
             lines = [
@@ -151,19 +152,19 @@ def main():
                 "[L] Show Names",
                 "[K] Show Stars HRs",
                 "[R] Reset",
-                "[F] Reflect X",
-                "[G] Reflect Y",
+                "[+/-] Zoom",
                 "[Q/E] Rotate",
                 "[WASD] Move",
-                "[+/-] Zoom",
                 "[Z/X/C/V] Shear",
+                "[F] Reflect X",
+                "[G] Reflect Y",
                 "----------------------------------",
                 "Values:",
                 f"Constellations: {'On' if state['constellations'] else 'Off'}",
-                f"Labels: {'On' if state['labels'] else 'Off'}",
+                f"Names: {'On' if state['labels'] else 'Off'}",
                 f"Stars HRs: {'On' if state['show_hr'] else 'Off'}",
-                f"Angle: {state['angle']:.1f}",
                 f"Zoom: {state['scale'] / DEFAULT_ZOOM:.2f}x",
+                f"Angle: {state['angle']:.1f}",
                 f"TX: {state['tx']:.2f}   TY: {state['ty']:.2f}",
                 f"SHX: {state['shx']:.2f}  SHY: {state['shy']:.2f}",
                 f"Reflect X: {'Yes' if state['reflect_x'] else 'No'}",
@@ -171,8 +172,21 @@ def main():
             ]
 
             for i, text in enumerate(lines):
-                text_surf = font_info.render(text, True, (255, 255, 255))
-                overlay_surf.blit(text_surf, (10, 10 + i * 15))
+                y = 15 + i * 18
+                if text == "Constellations Map":
+                    font = font_title
+                    color = (255, 255, 255)
+                elif text.strip().endswith(":"):
+                    font = font_text
+                    color = (255, 255, 255)
+                elif text.startswith("["):
+                    font = font_text
+                    color = (190, 190, 190)
+                else:
+                    font = font_text
+                    color = (190, 190, 190)
+                text_surf = font.render(text, True, color)
+                overlay_surf.blit(text_surf, (15, y))
 
             screen.blit(overlay_surf, (0, 0))
 
