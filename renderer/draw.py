@@ -33,7 +33,7 @@ def draw_stars(surface, stars, center, scale, zoom_level=1.0, color=(255, 255, 2
 
         DEFAULT_SCALE = 0.3
         zoom_relative = zoom_level / DEFAULT_SCALE
-        visibility_limit = 5.5 + 6 * math.log10(zoom_relative + 1e-5)
+        visibility_limit = 5 + 7 * math.log10(zoom_relative + 1e-5)
         if star.vmag > visibility_limit:
             continue    
 
@@ -103,14 +103,6 @@ def draw_labels(surface, constellations, center, scale, font, color=(255,255,0))
         if not constellation.stars:
             continue
 
-        # # 1. Para cada estrella, dibujar su HR
-        # for star in constellation.stars:
-        #     px = cx - star.x * scale
-        #     py = cy - star.y * scale
-        #     label_surf = font.render(str(star.hr), True, color)  # star.hr está en Star :contentReference[oaicite:2]{index=2}&#8203;:contentReference[oaicite:3]{index=3}
-        #     # Ajustar un poco la posición para que no solape la estrella
-        #     surface.blit(label_surf, (int(px) + 4, int(py) - 4))
-
         # 2. Dibujar el nombre de la constelación en su centroide
         avg_x = sum(star.x for star in constellation.stars) / len(constellation.stars)
         avg_y = sum(star.y for star in constellation.stars) / len(constellation.stars)
@@ -122,12 +114,12 @@ def draw_labels(surface, constellations, center, scale, font, color=(255,255,0))
         surface.blit(name_surf, (int(px - w/2), int(py - h/2)))
 
 
-def draw_hr_labels(surface, stars, center, scale, zoom_level, font, color=(200, 200, 255)):
+def draw_hr_labels(surface, stars, center, scale, zoom_level, font, color=(160, 160, 160)):
     cx, cy = center
     for star in stars:
         DEFAULT_SCALE = 0.3
         zoom_relative = zoom_level / DEFAULT_SCALE
-        visibility_limit = 5.5 + 6 * math.log10(zoom_relative + 1e-5)
+        visibility_limit = 5 + 7 * math.log10(zoom_relative + 1e-5)
         if star.vmag > visibility_limit:
             continue
 

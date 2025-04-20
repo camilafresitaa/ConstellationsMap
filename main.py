@@ -17,7 +17,9 @@ MOUSE_TRANSLATION_SPEED = 2.0
 def main():
     # Initialize Pygame
     pygame.init()
-    font = pygame.font.SysFont(None, 15)
+    font_info = pygame.font.SysFont(None, 17)
+    font_const = pygame.font.SysFont(None, 17)
+    font_hr = pygame.font.SysFont(None, 14)
     info = pygame.display.Info()
     WIDTH = info.current_w
     HEIGHT = info.current_h
@@ -44,7 +46,7 @@ def main():
         'shy': 0.0,
         'overlay': True,
         'constellations': True,
-        'labels': False,
+        'labels': True,
         'show_hr': False
     }
 
@@ -128,16 +130,16 @@ def main():
 
         # Render constellations and stars
         draw_stars(screen, stars, CENTER, SCALE * state["scale"], zoom_level=state["scale"])
+        if state["show_hr"]:
+            draw_hr_labels(screen, stars, CENTER, SCALE * state["scale"], state["scale"], font_hr)
+        if state["labels"]:
+            draw_labels(screen, constellations, CENTER, SCALE * state["scale"], font_const)
         if state["constellations"]:
             draw_constellations(screen, constellations, CENTER, SCALE * state["scale"])
-        if state["labels"]:
-            draw_labels(screen, constellations, CENTER, SCALE * state["scale"], font)
-        if state["show_hr"]:
-            draw_hr_labels(screen, stars, CENTER, SCALE * state["scale"], state["scale"], font)
 
         # Show overlay if active
         if state["overlay"]:
-            overlay_surf = pygame.Surface((130, 350), pygame.SRCALPHA)
+            overlay_surf = pygame.Surface((130, 380), pygame.SRCALPHA)
             overlay_surf.fill((0, 0, 0, 180))
 
             lines = [
@@ -158,7 +160,7 @@ def main():
                 "----------------------------------",
                 "Values:",
                 f"Constellations: {'On' if state['constellations'] else 'Off'}",
-                f"Constellations Names: {'On' if state['labels'] else 'Off'}",
+                f"Labels: {'On' if state['labels'] else 'Off'}",
                 f"Stars HRs: {'On' if state['show_hr'] else 'Off'}",
                 f"Angle: {state['angle']:.1f}",
                 f"Zoom: {state['scale'] / DEFAULT_ZOOM:.2f}x",
@@ -169,7 +171,7 @@ def main():
             ]
 
             for i, text in enumerate(lines):
-                text_surf = font.render(text, True, (255, 255, 255))
+                text_surf = font_info.render(text, True, (255, 255, 255))
                 overlay_surf.blit(text_surf, (10, 10 + i * 15))
 
             screen.blit(overlay_surf, (0, 0))
