@@ -52,11 +52,25 @@ pip install numpy pygame
 
 ## Running the Project
 
-Just run the `main.py` script:
+1. Clone this repository:
+   
+   ```
+   git clone https://github.com/camilafresitaa/ConstellationsMap
+   ```
 
-```bash
-python main.py
-```
+2. Install the necessary libraries:
+
+   ```
+   pip install numpy
+   pip install pygame
+   ```
+
+3. Run the `main.py` script:
+
+   ```
+   run main.py
+   ```
+
 
 ## Project Structure
 
