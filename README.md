@@ -44,11 +44,6 @@ Mouse Controls:
   - `pygame`
   - `math`
 
-Install dependencies:
-
-```bash
-pip install numpy pygame
-```
 
 ## Running the Project
 
