@@ -1,7 +1,9 @@
 # ConstellationsMap
 This project is a star and constellation visualizer built entirely with **matrix transformations**. It demonstrates how translation, rotation, scaling, reflection, and shearing can be applied using matrix multiplication.
 
-## Project Description
+![Constellations Map Banner](https://github.com/camilafresitaa/ConstellationsMap/blob/main/banner.jpg)
+
+## Project Overview
 
 **Constellations Map** visualizes stars from the Bright Star Catalog and draws recognized constellations based on HR numbers. It uses a **stereographic projection** to project the celestial sphere into 2D, and applies geometric transformations via 3x3 matrices to manipulate the star field interactively.
 
