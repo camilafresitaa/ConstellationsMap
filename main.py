@@ -20,6 +20,7 @@ def main():
     """
     # INITIALIZE PYGAME
     pygame.init()
+    pygame.display.set_caption("Constellations Map")
 
     # FONTS
     font_title = pygame.font.SysFont(None, 20)
@@ -31,7 +32,7 @@ def main():
     WIDTH = info.current_w
     HEIGHT = info.current_h
     CENTER = (WIDTH // 2, HEIGHT // 2)
-    screen = pygame.display.set_mode((WIDTH, HEIGHT))
+    screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.RESIZABLE)
     clock = pygame.time.Clock()
 
     # LOAD DATA
