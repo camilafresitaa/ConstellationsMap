@@ -7,6 +7,57 @@ This project is a star and constellation visualizer built entirely with **matrix
 
 **Constellations Map** visualizes stars from the Bright Star Catalog and draws recognized constellations based on HR numbers. It uses a **stereographic projection** to project the celestial sphere into 2D, and applies geometric transformations via 3x3 matrices to manipulate the star field interactively.
 
+## Project Structure
+
+```
+main.py
+ data/
+    ├️ ybsc5
+    └️ constellations.csv
+ stars/
+    ├️ stars.py
+    ├️ stars_coords_2d.py
+    └️ bsc_parser.py
+ constellations/
+    ├️ constellations.py
+    └️ constellations_parser.py
+ renderer/
+    └️ draw.py
+ scr/
+    └️ transformations.py
+ input/
+    └️ events.py
+```
+
+## Requirements
+
+- Python 3
+- Libraries:
+  - `numpy`
+  - `pygame`
+  - `math`
+
+## Running the Project
+
+1. Clone this repository:
+   
+   ```
+   git clone https://github.com/camilafresitaa/ConstellationsMap
+   ```
+
+2. Install the necessary libraries:
+
+   ```
+   pip install numpy
+   pip install pygame
+   ```
+
+3. Run the `main.py` script:
+
+   ```
+   run main.py
+   ```
+
 ## Features & Transformations
 
 All transformations are implemented using **homogeneous coordinates** and **matrix multiplication only**:
@@ -38,55 +89,8 @@ Mouse Controls:
 - **Left-click + drag** → Move the scene
 - **Right-click + drag** → Rotate the scene
 
-## Requirements
+## Important Note
 
-- Python 3
-- Libraries:
-  - `numpy`
-  - `pygame`
-  - `math`
+Some constellations, such as **Andromeda**, **Aquarius**, **Cetus**, **Pegasus**, **Pisces**, and **Sculptor**, are not visible in the current visualization.  
+This is because an **angular distance limit** was applied to avoid severe distortions caused by the stereographic projection when moving too far from the center.
 
-
-## Running the Project
-
-1. Clone this repository:
-   
-   ```
-   git clone https://github.com/camilafresitaa/ConstellationsMap
-   ```
-
-2. Install the necessary libraries:
-
-   ```
-   pip install numpy
-   pip install pygame
-   ```
-
-3. Run the `main.py` script:
-
-   ```
-   run main.py
-   ```
-
-
-## Project Structure
-
-```
-main.py
- data/
-    ├️ ybsc5
-    └️ constellations.csv
- stars/
-    ├️ stars.py
-    ├️ stars_coords_2d.py
-    └️ bsc_parser.py
- constellations/
-    ├️ constellations.py
-    └️ constellations_parser.py
- renderer/
-    └️ draw.py
- scr/
-    └️ transformations.py
- input/
-    └️ events.py
-```
