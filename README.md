@@ -93,11 +93,11 @@ Mouse Controls:
 
 This project combines two datasets:
 
-• **Yale Bright Star Catalogue (BSC5)**  
+- **Yale Bright Star Catalogue (BSC5)**  
   Provided by the Yale University Observatory, this catalog contains over 9,000 stars with positions, magnitudes, and other metadata. It is used here to obtain the positional and brightness data of the stars.  
   [Catalog Reference](http://tdc-www.harvard.edu/catalogs/bsc5.html)
 
-• **ConstellationsDataset** (by Camila Medrano)  
+- **ConstellationsDataset** (by Camila Medrano)  
   A custom dataset created specifically for this project, containing the sequences of HR numbers used to draw the constellation lines. Each sequence defines how stars should be connected visually to form the classical constellation shapes.  
   [View on GitHub](https://github.com/camilafresitaa/ConstellationsDataset)
 
