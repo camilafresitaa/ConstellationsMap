@@ -29,6 +29,27 @@ main.py
     └️ events.py
 ```
 
+- **`main.py`**: The entry point of the application. It initializes the window, loads the star and constellation data, handles user input, applies matrix transformations, and draws everything on screen.
+
+- **`data/`**: Contains the raw input files.
+  - `ybsc5`: The Yale Bright Star Catalogue in its original format.
+  - `constellations.csv`: The custom dataset defining how to connect stars for each constellation.
+
+- **`stars/`**: Responsible for reading and processing star data.
+  - `bsc_parser.py`: Parses the BSC catalog.
+  - `stars_coords_2d.py`: Projects celestial coordinates into 2D.
+  - `stars.py`: Defines the Star class and manages star objects.
+
+- **`constellations/`**: Manages constellation structure.
+  - `constellations_parser.py`: Reads and parses the CSV file.
+  - `constellations.py`: Defines Constellation objects and binds them to actual stars.
+
+- **`renderer/`**: Contains `draw.py`, which handles drawing stars, constellation lines, names, and overlays.
+
+- **`scr/`**: Contains `transformations.py`, where all transformation matrices (rotation, translation, scaling, shearing, reflection) are defined.
+
+- **`input/`**: Contains `events.py`, which maps keyboard and mouse input to transformation states.
+
 ## Requirements
 
 - Python 3
